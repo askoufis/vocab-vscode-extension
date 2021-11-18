@@ -4,6 +4,14 @@ Helper extension for the [Vocab](https://github.com/seek-oss/vocab) i18n framewo
 
 ## WARNING: This is still a work in progress. Use with caution.
 
+## How to install
+
+This addon is currently not on the vscode marketplace, so you need to install the addon manually:
+
+1. Download the `vocabhelper-x.x.x.vsix` file from the [releases page](https://github.com/askoufis/vocab-vscode-extension/releases).
+2. In the "Extensions" tab in VSCode, click the three dots and select the "Install from VSIX" item from the menu
+   ![Screenshot of extensions menu showing with cursor hovering over Install from VSIX menu item](docs/how-to-install.png)
+
 ## Features
 
 - Copy a string directly into the nearest `translations.json` file, wrapping the string with the `t` translation hook
