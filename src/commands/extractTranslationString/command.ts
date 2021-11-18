@@ -4,8 +4,11 @@ import * as fs from "fs";
 
 import {
   stripQuotes,
-  wrapTranslationString,
-  wrapWithQuotes,
+  wrapWithTranslationHook,
+  wrapWithDoubleQuotes,
+  wrapWithCurlyBrackets,
+  isSingleQuoted,
+  isDoubleQuoted,
 } from "../utils/stringUtils";
 import * as codeStrings from "./codeStrings";
 
@@ -29,35 +32,122 @@ const insertHookCall = (line: number, builder: vscode.TextEditorEdit) => {
   builder.insert(startOfLine, `${codeStrings.hookCall}\n`);
 };
 
-const extractTranslationString = (editor: vscode.TextEditor) => {
-  const document = editor.document;
-  const selection = editor.selection;
-  const currentLine = selection.active.line;
-  const selectedTranslationString = document.getText(selection);
-
-  const positionBeforeTranslationString = new vscode.Position(
+const getSelectionStrings = (
+  document: vscode.TextDocument,
+  selection: vscode.Selection
+) => {
+  const previousPosition = new vscode.Position(
     selection.start.line,
     selection.start.character - 1
   );
-  const characterBeforeTranslationString = document.getText(
-    new vscode.Range(positionBeforeTranslationString, selection.start)
+  const previousCharacter = document.getText(
+    new vscode.Range(previousPosition, selection.start)
   );
-  const isStringProp = characterBeforeTranslationString === "=";
-  const wrappedTranslationString = isStringProp
-    ? `{${wrapTranslationString(selectedTranslationString)}}`
-    : wrapTranslationString(wrapWithQuotes(selectedTranslationString));
+
+  const nextPosition = new vscode.Position(
+    selection.start.line,
+    selection.end.character + 1
+  );
+  const nextCharacter = document.getText(
+    new vscode.Range(nextPosition, selection.end)
+  );
+
+  const selectedText = document.getText(selection);
+  const firstCharacter = selectedText[0];
+  const lastCharacter = selectedText[selectedText.length - 1];
+
+  return {
+    previousCharacter,
+    firstCharacter,
+    lastCharacter,
+    nextCharacter,
+    selectedText,
+    previousPosition,
+    nextPosition,
+  };
+};
+
+const extractTranslationString = (editor: vscode.TextEditor): string => {
+  const document = editor.document;
+  const selection = editor.selection;
+  const currentLine = selection.active.line;
+
+  const {
+    previousCharacter,
+    firstCharacter,
+    lastCharacter,
+    nextCharacter,
+    selectedText: initiallySelectedText,
+    previousPosition,
+    nextPosition,
+  } = getSelectionStrings(document, selection);
+
+  let selectionToReplace = selection;
+  const isSelectionSingleQuoted = isSingleQuoted({
+    firstCharacter,
+    lastCharacter,
+  });
+  const isSelectionDoubleQuoted = isDoubleQuoted({
+    firstCharacter,
+    lastCharacter,
+  });
+  const isSelectionQuoted = isSelectionSingleQuoted || isSelectionDoubleQuoted;
+
+  // TODO: Handle string literal prop values inside curly braces, e.g. text={"foo"}
+  let wrappedTranslationString = "";
+  // This implies the selected text is already wrapped in quotes
+  const isStringProp = previousCharacter === "=";
+  if (isStringProp) {
+    wrappedTranslationString = `{${wrapWithTranslationHook(
+      initiallySelectedText
+    )}}`;
+  } else {
+    if (isSelectionQuoted) {
+      wrappedTranslationString = wrapWithTranslationHook(initiallySelectedText);
+    } else {
+      const isSelectionInsideSingleQuotes = isSingleQuoted({
+        firstCharacter: previousCharacter,
+        lastCharacter: nextCharacter,
+      });
+      const isSelectionInsideDoubleQuotes = isDoubleQuoted({
+        firstCharacter: previousCharacter,
+        lastCharacter: nextCharacter,
+      });
+
+      if (isSelectionInsideSingleQuotes || isSelectionInsideDoubleQuotes) {
+        const expandedSelection = new vscode.Selection(
+          previousPosition,
+          nextPosition
+        );
+        const expandedSelectionText = document.getText(expandedSelection);
+        wrappedTranslationString = wrapWithTranslationHook(
+          expandedSelectionText
+        );
+        selectionToReplace = expandedSelection;
+      } else {
+        wrappedTranslationString = wrapWithTranslationHook(
+          wrapWithDoubleQuotes(initiallySelectedText)
+        );
+      }
+    }
+  }
+
+  const isTextChild = previousCharacter === ">" && nextCharacter === "<";
+  if (isTextChild) {
+    wrappedTranslationString = wrapWithCurlyBrackets(wrappedTranslationString);
+  }
 
   editor.edit((builder) => {
     if (!hasUseTranslation(editor)) {
       insertImports(builder);
       insertHookCall(currentLine, builder);
     }
-    builder.replace(selection, wrappedTranslationString);
+    builder.replace(selectionToReplace, wrappedTranslationString);
   });
 
-  return isStringProp
-    ? stripQuotes(selectedTranslationString)
-    : selectedTranslationString;
+  return isSelectionQuoted
+    ? stripQuotes(initiallySelectedText)
+    : initiallySelectedText;
 };
 
 export const extractTranslationStringCommand = async () => {

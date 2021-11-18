@@ -1,4 +1,4 @@
-# Vocab VSCode Extension
+# Vocab Helper
 
 Helper extension for the [Vocab](https://github.com/seek-oss/vocab) i18n framework.
 
