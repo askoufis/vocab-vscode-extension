@@ -5,13 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.3] - 2021-11-19
+
+### Changed
+
+#### Commands
+
+- `vocabHelper.extractTranslationString` now correctly handles updating the `translations.json` file when it exists but contains no text.
+
 ## [0.0.2] - 2021-11-18
 
 ### Changed
 
 #### Commands
 
-- `vocabHelper.extractTranslationString` is less particular about whether your selection includes quotes or not. Whether you highlight the string with or without quotes, the extract string should be the same. There is still and edge case for string literal prop values inside curly brackets (e.g. `text={'foo'}`) that isn't handled correctly (yet).
+- `vocabHelper.extractTranslationString` is now less particular about whether your selection includes quotes or not. Whether you highlight the string with or without quotes, the extract string should be the same. There is still and edge case for string literal prop values inside curly brackets (e.g. `text={'foo'}`) that isn't handled correctly (yet).
 
 ## [0.0.1] - 2021-11-18
 

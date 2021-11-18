@@ -180,9 +180,9 @@ export const extractTranslationStringCommand = async () => {
       JSON.stringify(newTranslationString)
     );
   } else {
-    const translations = JSON.parse(
-      fs.readFileSync(translationsFilePath).toString()
-    );
+    const fileContents =
+      fs.readFileSync(translationsFilePath).toString() || "{}";
+    const translations = JSON.parse(fileContents);
     // Append the new translation string
     const updatedTranslations = {
       ...translations,
