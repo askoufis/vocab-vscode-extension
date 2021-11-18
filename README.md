@@ -36,3 +36,7 @@ This extension has the following configuration settings:
 ## Release Notes
 
 See [`CHANGELOG.md`](./CHANGELOG.md)
+
+## Known issues
+
+- String literal prop values inside curly brackets might not be extracted correctly
