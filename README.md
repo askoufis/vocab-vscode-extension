@@ -10,7 +10,7 @@ This addon is currently not on the vscode marketplace, so you need to install th
 
 1. Download the `vocabhelper-x.x.x.vsix` file from the [releases page](https://github.com/askoufis/vocab-vscode-extension/releases).
 2. In the "Extensions" tab in VSCode, click the three dots and select the "Install from VSIX" item from the menu
-   ![Screenshot of extensions menu showing with cursor hovering over Install from VSIX menu item](docs/how-to-install.png)
+   ![](docs/how-to-install.png)
 
 ## Features
 
