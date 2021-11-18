@@ -2,11 +2,14 @@
 
 Helper extension for the [Vocab](https://github.com/seek-oss/vocab) i18n framework.
 
+## WARNING: This is still a work in progress. Use with caution.
+
 ## Features
 
 - Copy a string directly into the nearest `translations.json` file, wrapping the string with the `t` translation hook
 - Automatically create a `translations.json` and/or `.vocab` folder if they don't already exist
 - Automatically import vocab if it's not already imported
+- Open the nearest translations file relative to the current component
 
 ## Commands
 
