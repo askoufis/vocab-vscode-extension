@@ -40,3 +40,5 @@ See [`CHANGELOG.md`](./CHANGELOG.md)
 ## Known issues
 
 - String literal prop values inside curly brackets might not be extracted correctly
+- JSX string literals that are on their own line, or wrap onto multiple lines, end up extracted without curly braces.
+- In general, long strings could be handled better, maybe a setting that lets you define a maximum string length, after which the key for that string will be truncated
