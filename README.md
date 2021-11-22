@@ -23,7 +23,7 @@ This addon is currently not on the vscode marketplace, so you need to install th
 
 This extension contributes the following commands:
 
-- `vocabHelper.extractTranslationString`: extract the currently highlighted string into the nearest `translations.json` file, creating the file if necessary
+- `vocabHelper.extractTranslationString` (default hotkey Ctrl + Alt + T on Windows/Linux, Ctrl + Option + T on MacOS): extract the currently highlighted string into the nearest `translations.json` file, creating the file if necessary
 - `vocabHelper.openTranslationsFile`: open the `translations.json` file for the current component
 
 ## Settings

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2021-11-22
+
+### Changed
+
+#### Commands
+
+- The default hotkey for `vocabHelper.extractTranslationString` is now `Ctrl + Alt + T` on Windows/Linux, `Ctrl + Option + T` on MacOS. The previous hotkey of `Ctrl + Shift + T` clashes with the default hotkey for opening a previously closed tab on Windows/Linux.
+
 ## [0.0.3] - 2021-11-19
 
 ### Changed

@@ -2,7 +2,7 @@
   "name": "vocabhelper",
   "displayName": "Vocab Helper",
   "description": "Helper extension for the Vocab i18n framework",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "askoufis",
   "repository": {
     "type": "git",
@@ -45,7 +45,7 @@
     "keybindings": [
       {
         "command": "vocabHelper.extractTranslationString",
-        "key": "ctrl+shift+t",
+        "key": "ctrl+alt+t",
         "when": "editorTextFocus"
       }
     ]
@@ -58,10 +58,10 @@
     "test": "node ./out/test/runTest.js",
     "package": "yarn build:release && vsce package",
     "test-compile": "tsc -p ./",
-    "build:release": "yarn esbuild-base -- --minify",
-    "esbuild": "yarn esbuild-base -- --sourcemap",
+    "build:release": "yarn esbuild-base --minify",
+    "esbuild": "yarn esbuild-base --sourcemap",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild-watch": "yarn esbuild-base -- --sourcemap --watch"
+    "esbuild-watch": "yarn esbuild-base --sourcemap --watch"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
