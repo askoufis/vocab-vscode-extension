@@ -125,16 +125,12 @@ const extractTranslationString = (editor: vscode.TextEditor): string => {
         );
         selectionToReplace = expandedSelection;
       } else {
-        wrappedTranslationString = wrapWithTranslationHook(
-          wrapWithDoubleQuotes(initiallySelectedText)
+        // This means the highlighted text is a JSX string literal
+        wrappedTranslationString = wrapWithCurlyBrackets(
+          wrapWithTranslationHook(wrapWithDoubleQuotes(initiallySelectedText))
         );
       }
     }
-  }
-
-  const isTextChild = previousCharacter === ">" && nextCharacter === "<";
-  if (isTextChild) {
-    wrappedTranslationString = wrapWithCurlyBrackets(wrappedTranslationString);
   }
 
   editor.edit((builder) => {
