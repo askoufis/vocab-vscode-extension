@@ -6,11 +6,12 @@ Helper extension for the [Vocab](https://github.com/seek-oss/vocab) i18n framewo
 
 ## How to install
 
-This addon is currently not on the vscode marketplace, so you need to install the addon manually:
+To install the extension, visit the [extension page](https://marketplace.visualstudio.com/items?itemName=askoufis.vocabhelper) and click install.
+Alternatively, search for `Vocab helper` in the extensions tab of VSCode and install it from there.
 
-1. Download the `vocabhelper-x.x.x.vsix` file from the [releases page](https://github.com/askoufis/vocab-vscode-extension/releases).
-2. In the "Extensions" tab in VSCode, click the three dots and select the "Install from VSIX" item from the menu
-   ![](docs/how-to-install.png)
+If you have previously installed the addon via a `.vsix` file from the releases page, please uninstall the addon
+and re-install the version from the VSCode marketplace. The versions in the releases section of the github page are now out of date.
+From now on all versions of the addon will be published to the vscode marketplace.
 
 ## Features
 
@@ -40,5 +41,4 @@ See [`CHANGELOG.md`](./CHANGELOG.md)
 ## Known issues
 
 - String literal prop values inside curly brackets might not be extracted correctly
-- JSX string literals that are on their own line, or wrap onto multiple lines, end up extracted without curly braces.
 - In general, long strings could be handled better, maybe a setting that lets you define a maximum string length, after which the key for that string will be truncated

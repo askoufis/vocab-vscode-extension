@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2021-11-26
+
+### Changed
+
+#### Documentation
+
+- Updated installation instructions and known issues sections of the README. Releases will no longer be published on the github repo release page because the extension is now on the VSCode marketplace.
+
 ## [0.0.5] - 2021-11-26
 
 ### Changed
