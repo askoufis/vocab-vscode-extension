@@ -5,19 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.0.5] - 2021-11-22
 
 ### Changed
 
 #### Commands
 
-- `vocabHelper.extractTranslationString` now correctly handles single line JSX string literals that are on their own line.
+- `vocabHelper.extractTranslationString` now correctly handles single line and multi line JSX string literals.
   E.g.
 
   ```tsx
   const MyComponent = () => (
     <div>
-      A string long enough to be on its own line. Padding padding padding.
+      A string long enough to be on its own line. Padding padding padding. Some
+      more padding.
     </div>
   );
   ```
@@ -28,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   const MyComponent = () => (
     <div>
       {t(
-        "A string long enough to be on its own line. Padding padding padding."
+        "A string long enough to be on its own line. Padding padding padding. Some more padding."
       )}
     </div>
   );

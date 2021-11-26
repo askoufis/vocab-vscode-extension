@@ -1,4 +1,9 @@
-import { isDoubleQuoted, isSingleQuoted, stripQuotes } from "./stringUtils";
+import {
+  consolidateMultiLineString,
+  isDoubleQuoted,
+  isSingleQuoted,
+  stripQuotes,
+} from "./stringUtils";
 
 describe("stringUtils", () => {
   describe("isSingleQuoted", () => {
@@ -68,6 +73,25 @@ describe("stringUtils", () => {
 
         expect(result).toBe("test");
       });
+    });
+  });
+
+  describe("consolidateMultiLineString", () => {
+    it("should leave a single-line string unaffected", () => {
+      const singleLineString = "This is a single line";
+
+      const result = consolidateMultiLineString(singleLineString);
+
+      expect(result).toBe(singleLineString);
+    });
+
+    it("should convert a multi-line string into a single line string", () => {
+      const multiLineString = "First line.\n    Second line.";
+      const expected = "First line. Second line.";
+
+      const result = consolidateMultiLineString(multiLineString);
+
+      expect(result).toBe(expected);
     });
   });
 });

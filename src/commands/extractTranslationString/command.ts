@@ -9,6 +9,7 @@ import {
   wrapWithCurlyBrackets,
   isSingleQuoted,
   isDoubleQuoted,
+  consolidateMultiLineString,
 } from "../utils/stringUtils";
 import * as codeStrings from "./codeStrings";
 
@@ -127,7 +128,11 @@ const extractTranslationString = (editor: vscode.TextEditor): string => {
       } else {
         // This means the highlighted text is a JSX string literal
         wrappedTranslationString = wrapWithCurlyBrackets(
-          wrapWithTranslationHook(wrapWithDoubleQuotes(initiallySelectedText))
+          wrapWithTranslationHook(
+            wrapWithDoubleQuotes(
+              consolidateMultiLineString(initiallySelectedText)
+            )
+          )
         );
       }
     }
@@ -141,9 +146,11 @@ const extractTranslationString = (editor: vscode.TextEditor): string => {
     builder.replace(selectionToReplace, wrappedTranslationString);
   });
 
-  return isSelectionQuoted
+  const strippedSelectedText = isSelectionQuoted
     ? stripQuotes(initiallySelectedText)
     : initiallySelectedText;
+
+  return consolidateMultiLineString(strippedSelectedText);
 };
 
 export const extractTranslationStringCommand = async () => {

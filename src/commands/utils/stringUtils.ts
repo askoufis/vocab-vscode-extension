@@ -30,3 +30,10 @@ export const wrapWithTranslationHook = <T extends string>(s: T) =>
 
 export const wrapWithCurlyBrackets = <T extends string>(s: T) =>
   `{${s}}` as const;
+
+export const consolidateMultiLineString = (s: string) => {
+  const lines = s.split("\n");
+  const trimmedLines = lines.map((line) => line.trim());
+
+  return trimmedLines.join(" ");
+};
