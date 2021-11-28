@@ -83,7 +83,7 @@ const MyComponent = () => {
         const testFileName = "jsxWithArguments.tsx";
 
         const start = new vscode.Position(10, 6);
-        const end = new vscode.Position(10, 77);
+        const end = new vscode.Position(10, 73);
         const selection = new vscode.Selection(start, end);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";

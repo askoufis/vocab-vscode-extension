@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2021-11-29
+
+Seems like the previous release didn't actually contain the new feature. Bumping the version so I can release a newer version.
+
 ## [0.1.0] - 2021-11-28
 
 ### Added
