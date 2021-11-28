@@ -91,8 +91,6 @@ const { t } = useTranslations(translations);
 }`;
 
           assert.strictEqual(translationsFileText, expectedTranslations);
-
-          await runTestCleanup();
         });
       }
     );
@@ -149,8 +147,6 @@ const MyComponent = () => {
 }`;
 
         assert.strictEqual(translationsFileText, expectedTranslations);
-
-        await runTestCleanup();
       });
     });
 
@@ -207,8 +203,6 @@ const MyComponent = () => {
 }`;
 
         assert.strictEqual(translationsFileText, expectedTranslations);
-
-        await runTestCleanup();
       });
     });
 
@@ -260,8 +254,6 @@ const MyComponent = () => {
 }`;
 
           assert.strictEqual(translationsFileText, expectedTranslations);
-
-          await runTestCleanup();
         });
       });
     });
