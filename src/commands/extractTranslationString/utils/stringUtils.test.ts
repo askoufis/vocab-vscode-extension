@@ -4,9 +4,12 @@ import {
   isSingleQuoted,
   stripFirstLast,
   stripQuotes,
+  removeCurlyBracketsFromString,
+  wrapWithTranslationHook,
+  getArgumentsFromJsxStringLiteral,
 } from "./stringUtils";
 
-// Mocha globals override this
+// Import this global so it.each works, I think mocha is overriding it
 import { it } from "@jest/globals";
 
 describe("stringUtils", () => {
@@ -95,6 +98,27 @@ describe("stringUtils", () => {
     });
   });
 
+  describe("wrapWithTranslationHook", () => {
+    it("should wrap the string correctly without arguments", () => {
+      const testString = '"Test"';
+      const expected = 't("Test")';
+
+      const result = wrapWithTranslationHook(testString);
+
+      expect(result).toBe(expected);
+    });
+
+    it("should wrap the string correctly with arguments", () => {
+      const testString = '"Test"';
+      const args = ["foo", "bar"];
+      const expected = 't("Test", {foo, bar})';
+
+      const result = wrapWithTranslationHook(testString, args);
+
+      expect(result).toBe(expected);
+    });
+  });
+
   describe("consolidateMultiLineString", () => {
     it("should leave a single-line string unaffected", () => {
       const singleLineString = "This is a single line";
@@ -111,6 +135,55 @@ describe("stringUtils", () => {
       const result = consolidateMultiLineString(multiLineString);
 
       expect(result).toBe(expected);
+    });
+  });
+
+  describe("getArgumentsFromJsxStringLiteral", () => {
+    it("should return a list with a single argument when the string contains 1 argument", () => {
+      const testString = "This string contains {num} arguments";
+      const expected = ["num"];
+
+      const result = getArgumentsFromJsxStringLiteral(testString);
+
+      expect(result).toEqual(expected);
+    });
+
+    it("should return a list with multiple arguments when the string contains multiple arguments", () => {
+      const testString =
+        "This string contains {num} arguments and {value} letters";
+      const expected = ["num", "value"];
+
+      const result = getArgumentsFromJsxStringLiteral(testString);
+
+      expect(result).toEqual(expected);
+    });
+
+    it("should return an empty list when the string does not contain arguments", () => {
+      const testString = "This string contains no arguments";
+      const expected: string[] = [];
+
+      const result = getArgumentsFromJsxStringLiteral(testString);
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("removeCurlyBracketsFromString", () => {
+    it("should not alter a string that does not contain curly brackets", () => {
+      const testString = "I have no curly brackets";
+
+      const result = removeCurlyBracketsFromString(testString);
+
+      expect(result).toEqual(testString);
+    });
+
+    it("should remove all curly brackets from a string", () => {
+      const testString = "{I have{}} {some} {curly} brackets}{";
+      const expected = "I have some curly brackets";
+
+      const result = removeCurlyBracketsFromString(testString);
+
+      expect(result).toEqual(expected);
     });
   });
 });

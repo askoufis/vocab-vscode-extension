@@ -4,6 +4,11 @@ import React from "react";
 
 const MyComponent = () => {
   const { t } = useTranslations(translations);
-  const numberOfMessages = 4;
-  return <div>You have {numberOfMessages} new messages.</div>;
+  const unreadEmails = 4;
+  const spamEmails = 2;
+  return (
+    <div>
+      You have {unreadEmails} unread emails and {spamEmails} spam emails.
+    </div>
+  );
 };

@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2021-11-28
+
+### Added
+
+- `vocabHelper.extractTranslationString` can now extract JSX string literals with arguments in them.
+  E.g.
+
+  ```tsx
+  const MyComponent = () => {
+    const numberOfThings = 2;
+    return <div>I have {numberOfThings} things</div>;
+  };
+  ```
+
+  becomes
+
+  ```tsx
+  const MyComponent = () => {
+    const numberOfThings = 2;
+    // prettier-ignore
+    return <div>{t("I have numberOfThings things"), {numberOfThings}}</div>;
+  };
+  ```
+
 ## [0.0.7] - 2021-11-28
 
 ### Changed

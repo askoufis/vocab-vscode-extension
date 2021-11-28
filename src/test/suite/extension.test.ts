@@ -78,6 +78,44 @@ const MyComponent = () => {
       });
     });
 
+    suite("Component containing a JSX string literal with arguments", () => {
+      test("should extract the translation string, surround the hook call with curly brackets, add the arguments as parameters and add it to the translations file", async () => {
+        const testFileName = "jsxWithArguments.tsx";
+
+        const start = new vscode.Position(10, 6);
+        const end = new vscode.Position(10, 77);
+        const selection = new vscode.Selection(start, end);
+
+        const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  const unreadEmails = 4;
+  const spamEmails = 2;
+  return (
+    <div>
+      {t("You have unreadEmails unread emails and spamEmails spam emails.", {unreadEmails, spamEmails})}
+    </div>
+  );
+};
+`;
+
+        const expectedTranslationsFileContents = `{
+  "You have unreadEmails unread emails and spamEmails spam emails.": {
+    "message": "You have {unreadEmails} unread emails and {spamEmails} spam emails."
+  }
+}`;
+        await runExtractionTest({
+          testFileName,
+          expectedFileContents,
+          expectedTranslationsFileContents,
+          selection,
+        });
+      });
+    });
+
     suite("Component containing a JSX string literal on multiple lines", () => {
       test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
         const testFileName = "multiLineJsxString.tsx";

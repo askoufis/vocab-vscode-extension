@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import * as fs from "fs";
 
 import {
   wrapWithTranslationHook,
@@ -8,6 +7,8 @@ import {
   wrapWithCurlyBrackets,
   consolidateMultiLineString,
   stripQuotes,
+  getArgumentsFromJsxStringLiteral,
+  removeCurlyBracketsFromString,
 } from "./utils/stringUtils";
 
 import {
@@ -53,8 +54,13 @@ const addTranslationStringToTranslationsFile = async (
   const { translationsFilePath } = getVocabPaths(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
+  const translationStringKey =
+    translationString.type === "jsx"
+      ? removeCurlyBracketsFromString(translationString.value)
+      : translationString.value;
+
   const translationStringObject = {
-    [translationString.value]: { message: translationString.value },
+    [translationStringKey]: { message: translationString.value },
   };
 
   try {
@@ -92,16 +98,15 @@ const replaceTranslationStringInCurrentDocument = async (
   editor: vscode.TextEditor,
   translationString: TranslationString
 ) => {
-  // TODO: Handle string literal prop values that are already inside curly brackets, e.g. label={"foo"}
-
+  const translationStringArguments =
+    translationString.type === "jsx"
+      ? getArgumentsFromJsxStringLiteral(translationString.value)
+      : [];
   let replacementString = wrapWithTranslationHook(
-    wrapWithDoubleQuotes(translationString.value)
+    wrapWithDoubleQuotes(translationString.value),
+    translationStringArguments
   );
 
-  console.log(
-    "Log ~ file: command.ts ~ line 95 ~ translationString",
-    translationString
-  );
   if (isJsxOrPropStringLiteral(translationString.type)) {
     replacementString = wrapWithCurlyBrackets(replacementString);
   }

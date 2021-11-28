@@ -8,6 +8,6 @@ export interface TranslationString {
   value: string;
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
-  /** Whether or not the string literal is inside JSX*/
+  /** What type of string literal this is*/
   type: StringLiteralType;
 }
