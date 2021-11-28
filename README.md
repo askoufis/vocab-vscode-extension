@@ -27,18 +27,10 @@ This extension contributes the following commands:
 - `vocabHelper.extractTranslationString` (default hotkey Ctrl + Alt + T on Windows/Linux, Ctrl + Option + T on MacOS): extract the currently highlighted string into the nearest `translations.json` file, creating the file if necessary
 - `vocabHelper.openTranslationsFile`: open the `translations.json` file for the current component
 
-## Settings
-
-This extension has the following configuration settings:
-
-- `vocabHelper.formatSaveTranslationOnExtract`: **Warning: When enabled, this setting causes a window to be open and closed very quickly, which may be quite jarring for some users.**
-  Format and save the `translations.json` file after adding the extracted string. When enabled, the `translation.json` file will be opened in your editor, saved (and formatted if auto-formatting JSON files is enabled), and then closed.
-
 ## Release Notes
 
 See [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## Known issues
 
-- String literal prop values inside curly brackets might not be extracted correctly
 - In general, long strings could be handled better, maybe a setting that lets you define a maximum string length, after which the key for that string will be truncated

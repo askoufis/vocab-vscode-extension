@@ -2,7 +2,7 @@
   "name": "vocabhelper",
   "displayName": "Vocab Helper",
   "description": "Helper extension for the Vocab i18n framework",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "askoufis",
   "repository": {
     "type": "git",
@@ -32,16 +32,6 @@
         "category": "Vocab"
       }
     ],
-    "configuration": {
-      "title": "Vocab Helper",
-      "properties": {
-        "vocabHelper.formatSaveTranslationOnExtract": {
-          "type": "boolean",
-          "default": false,
-          "description": "Format and save the translation.json file when extracting a translation string"
-        }
-      }
-    },
     "keybindings": [
       {
         "command": "vocabHelper.extractTranslationString",

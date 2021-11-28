@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] - 2021-11-28
+
+### Changed
+
+- `vocabHelper.extractTranslationString` now correctly handles string literal prop values
+  E.g.
+
+  ```tsx
+  const MyComponent = () => <div foo="bar">Test</div>;
+  ```
+
+  becomes
+
+  ```tsx
+  const MyComponent = () => <div foo={t("bar")}>Test</div>;
+  ```
+
+- Translation files now have their JSON automatically formatted. The hacky workaround enabled by the `vocabHelper.formatSaveTranslationOnExtract` setting has been removed, and hence the setting itself has also been removed. I never knew `JSON.stringify` could also format your JSON.
+
+### Internal
+
+- General readability and cleanliness refactor
+- Integration tests now all pass when run at once. See [the issue](https://github.com/askoufis/vocab-vscode-extension/issues/7) for more info.
+
 ## [0.0.6] - 2021-11-26
 
 ### Changed
