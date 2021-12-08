@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { StringLiteralType } from "../types";
+import { StringLiteralType } from "../../../types/translation";
 import * as codeStrings from "../codeStrings";
 import { isDoubleQuoted, isSingleQuoted, stripFirstLast } from "./stringUtils";
 

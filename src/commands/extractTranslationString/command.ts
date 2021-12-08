@@ -18,8 +18,8 @@ import {
   insertHookCall,
   insertImports,
 } from "./utils/editorUtils";
-import { StringLiteralType, TranslationString } from "./types";
 import { TextDecoder } from "util";
+import { StringLiteralType, TranslationString } from "../../types/translation";
 
 const getTranslationString = (editor: vscode.TextEditor): TranslationString => {
   const document = editor.document;
@@ -37,21 +37,21 @@ const getTranslationString = (editor: vscode.TextEditor): TranslationString => {
   };
 };
 
-const getVocabPaths = (editor: vscode.TextEditor) => {
+const getTranslationsFilePath = (editor: vscode.TextEditor) => {
   const currentlyOpenFilePath = editor.document.fileName;
   const currentDirectory = path.dirname(currentlyOpenFilePath);
 
   const vocabFolderPath = path.join(currentDirectory, ".vocab");
   const translationsFilePath = path.join(vocabFolderPath, "translations.json");
 
-  return { translationsFilePath };
+  return translationsFilePath;
 };
 
 const addTranslationStringToTranslationsFile = async (
   editor: vscode.TextEditor,
   translationString: TranslationString
 ): Promise<void> => {
-  const { translationsFilePath } = getVocabPaths(editor);
+  const translationsFilePath = getTranslationsFilePath(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
   const translationStringKey =

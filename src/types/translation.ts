@@ -11,3 +11,10 @@ export interface TranslationString {
   /** What type of string literal this is*/
   type: StringLiteralType;
 }
+
+interface TranslationStringData {
+  message: string;
+  description?: string;
+}
+
+export type TranslationsFileData = Record<string, TranslationStringData>;
