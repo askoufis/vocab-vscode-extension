@@ -82,6 +82,39 @@ const MyComponent = () => {
       });
     });
 
+    suite("Component that contains a string constant", () => {
+      const selections = createUnquotedAndQuotedSelections(6, 20, 6, 37);
+
+      selections.map((selection) => {
+        test("should extract the translation string without surrounding it with curly brackets", async () => {
+          const testFileName = "stringConstant.tsx";
+
+          const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  const someText = t("This is some text");
+  return <div>{someText}</div>;
+};
+`;
+
+          const expectedTranslationsFileContents = `{
+  "This is some text": {
+    "message": "This is some text"
+  }
+}`;
+          await runExtractionTest({
+            testFileName,
+            expectedFileContents,
+            expectedTranslationsFileContents,
+            selection,
+          });
+        });
+      });
+    });
+
     suite("Component containing a JSX string literal with arguments", () => {
       test("should extract the translation string, surround the hook call with curly brackets, add the arguments as parameters and add it to the translations file", async () => {
         const testFileName = "jsxWithArguments.tsx";

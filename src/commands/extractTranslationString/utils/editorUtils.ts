@@ -73,7 +73,12 @@ export const analyseSelection = (
     document,
     doubleExpandedSelection
   );
+
   if (doubleExpandedText.startsWith("=")) {
+    if (expandedSelectionText.startsWith(" ")) {
+      return { selection: originalSelection, type: "regular" };
+    }
+
     return { selection: expandedSelection, type: "prop" };
   }
 

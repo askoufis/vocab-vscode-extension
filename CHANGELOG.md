@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2021-12-17
+
+### Changed
+
+- `vocabHelper.extractTranslationString` now correctly handles highlighting string constants with their surround quotes. Previously, these were being detected as string literal prop values.
+
+  E.g.
+
+  ```ts
+  const foo = "foo";
+  //          _____
+  //          ^^^^^ Highlighted
+
+  // Incorrect extraction before v0.2.1
+  const foo = {t("foo")};
+
+  // Fixed extraction in v0.2.1
+  const foo = t("foo");
+  ```
+
 ## [0.2.0] - 2021-12-17
 
 ### Added
