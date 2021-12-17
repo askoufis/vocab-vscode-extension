@@ -27,6 +27,10 @@ This extension contributes the following commands:
 - `vocabHelper.extractTranslationString` (default hotkey Ctrl + Alt + T on Windows/Linux, Ctrl + Option + T on MacOS): extract the currently highlighted string into the nearest `translations.json` file, creating the file if necessary
 - `vocabHelper.openTranslationsFile`: open the `translations.json` file for the current component
 
+## Configuration
+
+- `vocabHelper.maxTranslationKeyLength`: Truncate translation keys longer than a specified maximum length
+
 ## Release Notes
 
 See [`CHANGELOG.md`](./CHANGELOG.md)
