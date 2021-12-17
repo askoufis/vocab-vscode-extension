@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2021-12-17
+
+### Added
+
+- The maximum translation key length can now be configured via the `vocabHelper.maxTranslationKeyLength` configuration property. Translation keys above this length will be truncated to the specified maximum length (unless the truncation would occur immediately after a space, in which case the truncation will occur just before the space) and an ellipsis (three period characters, not any of the unicode ellipsis character) will be appended.
+
+  E.g. with a maximum translation key length of 15
+
+  ```
+  "I'm a translation key" -> "I'm a translati..."
+  ```
+
 ## [0.1.1] - 2021-11-29
 
 Seems like the previous release didn't actually contain the new feature. Bumping the version so I can release a newer version.

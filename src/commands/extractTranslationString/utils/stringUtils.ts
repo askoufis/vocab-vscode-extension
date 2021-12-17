@@ -63,3 +63,22 @@ export const getArgumentsFromJsxStringLiteral = (s: string): string[] => {
 
 export const removeCurlyBracketsFromString = (s: string): string =>
   s.replace(/\{/g, "").replace(/\}/g, "");
+
+export const truncateString = (
+  s: string,
+  maxTranslationKeyLength: number
+): string => {
+  if (s.length > maxTranslationKeyLength) {
+    const lastCharacterBeforeTruncation = s[maxTranslationKeyLength - 1];
+    const willTruncateOnSpace = lastCharacterBeforeTruncation === " ";
+
+    const endIndex = willTruncateOnSpace
+      ? maxTranslationKeyLength - 1
+      : maxTranslationKeyLength;
+    const substringUpToMaxLength = s.slice(0, endIndex);
+
+    return `${substringUpToMaxLength}...`;
+  }
+
+  return s;
+};

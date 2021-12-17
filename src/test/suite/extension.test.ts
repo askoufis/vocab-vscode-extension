@@ -1,7 +1,11 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import * as path from "path";
-import { createUnquotedAndQuotedSelections, runExtractionTest } from "./utils";
+import {
+  createUnquotedAndQuotedSelections,
+  runExtractionTest,
+  setMaxTranslationKeyLength,
+} from "./utils";
 
 suite("Vocab Helper Extension Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -186,5 +190,44 @@ const MyComponent = () => {
         });
       });
     });
+
+    suite(
+      "Component containing string literal with max key length set to 20",
+      () => {
+        test("should extract and truncate the translation string", async () => {
+          const maxTranslationKeyLength = 20;
+          await setMaxTranslationKeyLength(maxTranslationKeyLength);
+
+          const start = new vscode.Position(6, 14);
+          const end = new vscode.Position(6, 65);
+          const selection = new vscode.Selection(start, end);
+
+          const testFileName = "truncateString.tsx";
+
+          const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  return <div>{t("This is a long line...")}</div>;
+};
+`;
+
+          const expectedTranslationsFileContents = `{
+  "This is a long line...": {
+    "message": "This is a long line of text that will be truncated."
+  }
+}`;
+
+          await runExtractionTest({
+            testFileName,
+            expectedFileContents,
+            expectedTranslationsFileContents,
+            selection,
+          });
+        });
+      }
+    );
   });
 });

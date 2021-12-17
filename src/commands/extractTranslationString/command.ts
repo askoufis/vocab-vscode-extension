@@ -9,6 +9,7 @@ import {
   stripQuotes,
   getArgumentsFromJsxStringLiteral,
   removeCurlyBracketsFromString,
+  truncateString,
 } from "./utils/stringUtils";
 
 import {
@@ -20,6 +21,7 @@ import {
 } from "./utils/editorUtils";
 import { TextDecoder } from "util";
 import { StringLiteralType, TranslationString } from "../../types/translation";
+import { MaxTranslationKeyLength } from "../../types/configuration";
 
 const getTranslationString = (editor: vscode.TextEditor): TranslationString => {
   const document = editor.document;
@@ -49,15 +51,30 @@ const getTranslationsFilePath = (editor: vscode.TextEditor) => {
 
 const addTranslationStringToTranslationsFile = async (
   editor: vscode.TextEditor,
-  translationString: TranslationString
+  translationString: TranslationString,
+  maxTranslationKeyLength: MaxTranslationKeyLength
 ): Promise<void> => {
   const translationsFilePath = getTranslationsFilePath(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
-  const translationStringKey =
+  const translationStringArguments =
+    translationString.type === "jsx"
+      ? getArgumentsFromJsxStringLiteral(translationString.value)
+      : [];
+  const hasArguments = translationStringArguments.length > 0;
+
+  let translationStringKey =
     translationString.type === "jsx"
       ? removeCurlyBracketsFromString(translationString.value)
       : translationString.value;
+
+  // For now we'll only truncate keys that don't have arguments
+  if (!hasArguments && maxTranslationKeyLength) {
+    translationStringKey = truncateString(
+      translationStringKey,
+      maxTranslationKeyLength
+    );
+  }
 
   const translationStringObject = {
     [translationStringKey]: { message: translationString.value },
@@ -96,14 +113,27 @@ const isJsxOrPropStringLiteral = (type: StringLiteralType): boolean =>
 
 const replaceTranslationStringInCurrentDocument = async (
   editor: vscode.TextEditor,
-  translationString: TranslationString
+  translationString: TranslationString,
+  maxTranslationKeyLength: MaxTranslationKeyLength
 ) => {
   const translationStringArguments =
     translationString.type === "jsx"
       ? getArgumentsFromJsxStringLiteral(translationString.value)
       : [];
-  let replacementString = wrapWithTranslationHook(
-    wrapWithDoubleQuotes(translationString.value),
+  const hasArguments = translationStringArguments.length > 0;
+
+  let replacementString = translationString.value;
+
+  // For now we'll only truncate keys that don't have arguments
+  if (!hasArguments && maxTranslationKeyLength) {
+    replacementString = truncateString(
+      replacementString,
+      maxTranslationKeyLength
+    );
+  }
+
+  replacementString = wrapWithTranslationHook(
+    wrapWithDoubleQuotes(replacementString),
     translationStringArguments
   );
 
@@ -132,6 +162,19 @@ export const extractTranslationStringCommand = async () => {
   // Get the translation string from the user's selection
   const translationString = getTranslationString(editor);
 
-  await replaceTranslationStringInCurrentDocument(editor, translationString);
-  await addTranslationStringToTranslationsFile(editor, translationString);
+  const maxTranslationKeyLength =
+    vscode.workspace
+      .getConfiguration("vocabHelper")
+      .get<MaxTranslationKeyLength>("maxTranslationKeyLength") || null;
+
+  await replaceTranslationStringInCurrentDocument(
+    editor,
+    translationString,
+    maxTranslationKeyLength
+  );
+  await addTranslationStringToTranslationsFile(
+    editor,
+    translationString,
+    maxTranslationKeyLength
+  );
 };

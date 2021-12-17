@@ -7,6 +7,7 @@ import {
   removeCurlyBracketsFromString,
   wrapWithTranslationHook,
   getArgumentsFromJsxStringLiteral,
+  truncateString,
 } from "./stringUtils";
 
 // Import this global so it.each works, I think mocha is overriding it
@@ -184,6 +185,38 @@ describe("stringUtils", () => {
       const result = removeCurlyBracketsFromString(testString);
 
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe("truncateString", () => {
+    it("should not truncate a string that is shorter than or equal to the maximum translation key length", () => {
+      const testString = "I'm quite short";
+      const maxTranslationKeyLength = 20;
+
+      const result = truncateString(testString, maxTranslationKeyLength);
+
+      expect(result).toBe(testString);
+    });
+
+    it("should truncate a string that is longer than the maximum translation key length", () => {
+      const testString = "I am longer than the max translation length";
+      const maxTranslationKeyLength = 20;
+
+      const result = truncateString(testString, maxTranslationKeyLength);
+
+      const expected = "I am longer than the...";
+      expect(result).toBe(expected);
+    });
+
+    it("should truncate a string without leaving a space before the ellipsis", () => {
+      const testString =
+        "I'm a significantly longer string with a space at my 20th character";
+      const maxTranslationKeyLength = 20;
+
+      const result = truncateString(testString, maxTranslationKeyLength);
+
+      const expected = "I'm a significantly...";
+      expect(result).toBe(expected);
     });
   });
 });
