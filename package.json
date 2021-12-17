@@ -2,7 +2,7 @@
   "name": "vocabhelper",
   "displayName": "Vocab Helper",
   "description": "Helper extension for the Vocab i18n framework",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "publisher": "askoufis",
   "repository": {
     "type": "git",
@@ -32,6 +32,20 @@
         "category": "Vocab"
       }
     ],
+    "configuration": {
+      "title": "Vocab Helper",
+      "properties": {
+        "vocabHelper.maxTranslationKeyLength": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "default": null,
+          "description": "Truncate translation keys longer than the specified maximum length"
+        }
+      }
+    },
     "keybindings": [
       {
         "command": "vocabHelper.extractTranslationString",

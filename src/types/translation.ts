@@ -12,9 +12,14 @@ export interface TranslationString {
   type: StringLiteralType;
 }
 
+type TranslationKey = string;
+
 interface TranslationStringData {
   message: string;
   description?: string;
 }
 
-export type TranslationsFileData = Record<string, TranslationStringData>;
+export type TranslationsFileData = Record<
+  TranslationKey,
+  TranslationStringData
+>;

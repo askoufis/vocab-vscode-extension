@@ -2,15 +2,32 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as path from "path";
 import { TextDecoder } from "util";
+import { MaxTranslationKeyLength } from "../../types/configuration";
 
 const testFolderLocation = "/../../../src/test/suite/testFiles/";
 const vocabFolderPath = __dirname + testFolderLocation + ".vocab/";
 const vocabFolderUri = vscode.Uri.file(vocabFolderPath);
 
-const runTestCleanup = async () => {
+export const setMaxTranslationKeyLength = async (
+  maxTranslationKeyLength: MaxTranslationKeyLength
+) => {
+  const configuration = vscode.workspace.getConfiguration();
+
+  await configuration.update(
+    "vocabHelper.maxTranslationKeyLength",
+    maxTranslationKeyLength,
+    vscode.ConfigurationTarget.Global
+  );
+};
+
+const runTestSetup = async () => {
   try {
     await vscode.workspace.fs.delete(vocabFolderUri, { recursive: true });
   } catch {}
+};
+
+const runTestCleanup = async () => {
+  await setMaxTranslationKeyLength(null);
 };
 
 export const createUnquotedAndQuotedSelections = (
@@ -47,7 +64,7 @@ export const runExtractionTest = async ({
   expectedTranslationsFileContents: string;
   selection: vscode.Selection;
 }) => {
-  await runTestCleanup();
+  await runTestSetup();
 
   const testFileUri = vscode.Uri.file(
     path.join(__dirname + testFolderLocation + testFileName)
@@ -72,4 +89,6 @@ export const runExtractionTest = async ({
     translationsFileContents,
     expectedTranslationsFileContents
   );
+
+  await runTestCleanup();
 };
