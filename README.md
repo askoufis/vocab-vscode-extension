@@ -38,3 +38,12 @@ See [`CHANGELOG.md`](./CHANGELOG.md)
 ## Known issues
 
 - In general, long strings could be handled better, maybe a setting that lets you define a maximum string length, after which the key for that string will be truncated
+
+## Contributing
+
+### Running the extension locally
+
+1. Clone the repo
+2. Run `yarn` to install dependencies
+3. Run the `Extension Tests` launch configuration to make sure everything is working
+4. Run the `Run Extension` launch config to start a separate VSCode instance that's running the extension code from your local repo
