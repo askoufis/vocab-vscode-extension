@@ -1,72 +1,38 @@
 import * as vscode from "vscode";
-import * as path from "path";
 
 import {
-  wrapWithTranslationHook,
-  wrapWithDoubleQuotes,
-  wrapWithCurlyBrackets,
-  consolidateMultiLineString,
-  stripQuotes,
   getArgumentsFromJsxStringLiteral,
   removeCurlyBracketsFromString,
   truncateString,
 } from "./utils/stringUtils";
 
 import {
-  analyseSelection,
-  getSelectionText,
-  hasUseTranslation,
-  insertHookCall,
-  insertImports,
+  getHighlightString,
+  replaceHighlightWithTranslation,
 } from "./utils/editorUtils";
 import { TextDecoder } from "util";
-import { StringLiteralType, TranslationString } from "../../types/translation";
+import { HighlightString, TranslationsFile } from "../../types/translation";
 import { MaxTranslationKeyLength } from "../../types/configuration";
-
-const getTranslationString = (editor: vscode.TextEditor): TranslationString => {
-  const document = editor.document;
-  let selection = editor.selection;
-
-  const selectionAnalysis = analyseSelection(document, selection);
-  let value = consolidateMultiLineString(getSelectionText(document, selection));
-  if (selectionAnalysis.type !== "jsx") {
-    value = stripQuotes(value);
-  }
-
-  return {
-    value,
-    ...selectionAnalysis,
-  };
-};
-
-const getTranslationsFilePath = (editor: vscode.TextEditor) => {
-  const currentlyOpenFilePath = editor.document.fileName;
-  const currentDirectory = path.dirname(currentlyOpenFilePath);
-
-  const vocabFolderPath = path.join(currentDirectory, ".vocab");
-  const translationsFilePath = path.join(vocabFolderPath, "translations.json");
-
-  return translationsFilePath;
-};
+import { getTranslationsFilePath } from "./utils/file";
 
 const addTranslationStringToTranslationsFile = async (
   editor: vscode.TextEditor,
-  translationString: TranslationString,
+  highlightString: HighlightString,
   maxTranslationKeyLength: MaxTranslationKeyLength
 ): Promise<void> => {
   const translationsFilePath = getTranslationsFilePath(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
   const translationStringArguments =
-    translationString.type === "jsx"
-      ? getArgumentsFromJsxStringLiteral(translationString.value)
+    highlightString.type === "jsxStringLiteral"
+      ? getArgumentsFromJsxStringLiteral(highlightString.value)
       : [];
   const hasArguments = translationStringArguments.length > 0;
 
   let translationStringKey =
-    translationString.type === "jsx"
-      ? removeCurlyBracketsFromString(translationString.value)
-      : translationString.value;
+    highlightString.type === "jsxStringLiteral"
+      ? removeCurlyBracketsFromString(highlightString.value)
+      : highlightString.value;
 
   // For now we'll only truncate keys that don't have arguments
   if (!hasArguments && maxTranslationKeyLength) {
@@ -77,18 +43,20 @@ const addTranslationStringToTranslationsFile = async (
   }
 
   const translationStringObject = {
-    [translationStringKey]: { message: translationString.value },
+    [translationStringKey]: { message: highlightString.value },
   };
 
   try {
+    // Check if the file exists
     await vscode.workspace.fs.stat(translationsFileUri);
     const fileContentsBuffer = await vscode.workspace.fs.readFile(
       translationsFileUri
     );
+
     // Default to an empty object if the file is empty
     const fileContents = new TextDecoder().decode(fileContentsBuffer) || "{}";
 
-    const existingTranslations = JSON.parse(fileContents);
+    const existingTranslations: TranslationsFile = JSON.parse(fileContents);
     // Append the new translation string
     const updatedTranslations = {
       ...existingTranslations,
@@ -108,51 +76,6 @@ const addTranslationStringToTranslationsFile = async (
   }
 };
 
-const isJsxOrPropStringLiteral = (type: StringLiteralType): boolean =>
-  type === "jsx" || type === "prop";
-
-const replaceTranslationStringInCurrentDocument = async (
-  editor: vscode.TextEditor,
-  translationString: TranslationString,
-  maxTranslationKeyLength: MaxTranslationKeyLength
-) => {
-  const translationStringArguments =
-    translationString.type === "jsx"
-      ? getArgumentsFromJsxStringLiteral(translationString.value)
-      : [];
-  const hasArguments = translationStringArguments.length > 0;
-
-  let replacementString = translationString.value;
-
-  // For now we'll only truncate keys that don't have arguments
-  if (!hasArguments && maxTranslationKeyLength) {
-    replacementString = truncateString(
-      replacementString,
-      maxTranslationKeyLength
-    );
-  }
-
-  replacementString = wrapWithTranslationHook(
-    wrapWithDoubleQuotes(replacementString),
-    translationStringArguments
-  );
-
-  if (isJsxOrPropStringLiteral(translationString.type)) {
-    replacementString = wrapWithCurlyBrackets(replacementString);
-  }
-
-  await editor.edit((builder) => {
-    if (!hasUseTranslation(editor)) {
-      insertImports(builder);
-
-      const currentSelection = editor.selection;
-      const currentLine = currentSelection.active.line;
-      insertHookCall(currentLine, builder);
-    }
-    builder.replace(translationString.selection, replacementString);
-  });
-};
-
 export const extractTranslationStringCommand = async () => {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -160,21 +83,21 @@ export const extractTranslationStringCommand = async () => {
   }
 
   // Get the translation string from the user's selection
-  const translationString = getTranslationString(editor);
+  const highlightString = getHighlightString(editor);
 
   const maxTranslationKeyLength =
     vscode.workspace
       .getConfiguration("vocabHelper")
       .get<MaxTranslationKeyLength>("maxTranslationKeyLength") || null;
 
-  await replaceTranslationStringInCurrentDocument(
+  await replaceHighlightWithTranslation(
     editor,
-    translationString,
+    highlightString,
     maxTranslationKeyLength
   );
   await addTranslationStringToTranslationsFile(
     editor,
-    translationString,
+    highlightString,
     maxTranslationKeyLength
   );
 };

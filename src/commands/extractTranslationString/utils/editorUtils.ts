@@ -1,7 +1,19 @@
 import * as vscode from "vscode";
-import { StringLiteralType } from "../../../types/translation";
+import { MaxTranslationKeyLength } from "../../../types/configuration";
+import { HighlightString, HighlightType } from "../../../types/translation";
 import * as codeStrings from "../codeStrings";
-import { isDoubleQuoted, isSingleQuoted, stripFirstLast } from "./stringUtils";
+import {
+  consolidateMultiLineString,
+  getArgumentsFromJsxStringLiteral,
+  isDoubleQuoted,
+  isSingleQuoted,
+  stripFirstLast,
+  stripQuotes,
+  truncateString,
+  wrapWithCurlyBrackets,
+  wrapWithDoubleQuotes,
+  wrapWithTranslationHook,
+} from "./stringUtils";
 
 const startOfFile = new vscode.Position(0, 0);
 
@@ -43,6 +55,51 @@ export const expandSelectionByOneCharacter = (
   return new vscode.Selection(newStartPosition, newEndPosition);
 };
 
+const isJsxOrPropStringLiteral = (type: HighlightType): boolean =>
+  type === "jsxStringLiteral" || type === "propValueStringLiteral";
+
+export const replaceHighlightWithTranslation = async (
+  editor: vscode.TextEditor,
+  highlightString: HighlightString,
+  maxTranslationKeyLength: MaxTranslationKeyLength
+) => {
+  const translationStringArguments =
+    highlightString.type === "jsxStringLiteral"
+      ? getArgumentsFromJsxStringLiteral(highlightString.value)
+      : [];
+  const hasArguments = translationStringArguments.length > 0;
+
+  let replacementString = highlightString.value;
+
+  // For now we'll only truncate keys that don't have arguments
+  if (!hasArguments && maxTranslationKeyLength) {
+    replacementString = truncateString(
+      replacementString,
+      maxTranslationKeyLength
+    );
+  }
+
+  replacementString = wrapWithTranslationHook(
+    wrapWithDoubleQuotes(replacementString),
+    translationStringArguments
+  );
+
+  if (isJsxOrPropStringLiteral(highlightString.type)) {
+    replacementString = wrapWithCurlyBrackets(replacementString);
+  }
+
+  await editor.edit((builder) => {
+    if (!hasUseTranslation(editor)) {
+      insertImports(builder);
+
+      const currentSelection = editor.selection;
+      const currentLine = currentSelection.active.line;
+      insertHookCall(currentLine, builder);
+    }
+    builder.replace(highlightString.selection, replacementString);
+  });
+};
+
 export const insertHookCall = (
   line: number,
   builder: vscode.TextEditorEdit
@@ -51,10 +108,10 @@ export const insertHookCall = (
   builder.insert(startOfLine, `${codeStrings.hookCall}\n`);
 };
 
-export const analyseSelection = (
+const analyseSelection = (
   document: vscode.TextDocument,
   originalSelection: vscode.Selection
-): { selection: vscode.Selection; type: StringLiteralType } => {
+): { selection: vscode.Selection; type: HighlightType } => {
   const expandedSelection = expandSelectionByOneCharacter(
     document,
     originalSelection
@@ -62,7 +119,7 @@ export const analyseSelection = (
   const expandedSelectionText = getSelectionText(document, expandedSelection);
 
   if (expandedSelectionText.startsWith("=")) {
-    return { selection: originalSelection, type: "prop" };
+    return { selection: originalSelection, type: "propValueStringLiteral" };
   }
 
   const doubleExpandedSelection = expandSelectionByOneCharacter(
@@ -76,10 +133,10 @@ export const analyseSelection = (
 
   if (doubleExpandedText.startsWith("=")) {
     if (expandedSelectionText.startsWith(" ")) {
-      return { selection: originalSelection, type: "regular" };
+      return { selection: originalSelection, type: "stringLiteral" };
     }
 
-    return { selection: expandedSelection, type: "prop" };
+    return { selection: expandedSelection, type: "propValueStringLiteral" };
   }
 
   const originalSelectionText = stripFirstLast(expandedSelectionText);
@@ -102,8 +159,26 @@ export const analyseSelection = (
 
   const type =
     !isOriginalSelectionQuoted && !isExpandedSelectionQuoted
-      ? "jsx"
-      : "regular";
+      ? "jsxStringLiteral"
+      : "stringLiteral";
 
   return isExpandedSelectionQuoted ? { selection, type } : { selection, type };
+};
+
+export const getHighlightString = (
+  editor: vscode.TextEditor
+): HighlightString => {
+  const document = editor.document;
+  const selection = editor.selection;
+
+  const selectionAnalysis = analyseSelection(document, selection);
+  let value = consolidateMultiLineString(getSelectionText(document, selection));
+  if (selectionAnalysis.type !== "jsxStringLiteral") {
+    value = stripQuotes(value);
+  }
+
+  return {
+    value,
+    ...selectionAnalysis,
+  };
 };
