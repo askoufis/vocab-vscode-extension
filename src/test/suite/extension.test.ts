@@ -1,6 +1,4 @@
-import * as assert from "assert";
 import * as vscode from "vscode";
-import * as path from "path";
 import {
   createUnquotedAndQuotedSelections,
   runExtractionTest,
@@ -154,7 +152,7 @@ const MyComponent = () => {
     });
 
     suite("Component containing a JSX string literal on multiple lines", () => {
-      test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
+      test("should extract the translation string from the multiline JSX string literal, surround the hook call with curly brackets and add it to the translations file", async () => {
         const testFileName = "multiLineJsxString.tsx";
 
         // This is a multi-line selection
@@ -195,7 +193,7 @@ const MyComponent = () => {
       const selections = createUnquotedAndQuotedSelections(6, 19, 6, 22);
 
       selections.map((selection) => {
-        test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
+        test("should extract the translation string from a string literal prop, surround the hook call with curly brackets and add it to the translations file", async () => {
           const testFileName = "propValue.tsx";
 
           const expectedFileContents = `import { useTranslations } from "@vocab/react";

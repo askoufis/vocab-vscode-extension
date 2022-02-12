@@ -5,6 +5,7 @@ import {
 } from "./commands";
 
 export const activate = async (context: vscode.ExtensionContext) => {
+  // eslint-disable-next-line no-console
   console.log("Vocab Helper is now active");
 
   const extractTranslationStringDisposable = vscode.commands.registerCommand(

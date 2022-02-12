@@ -5,7 +5,11 @@ import { TextDecoder } from "util";
 import { MaxTranslationKeyLength } from "../../types/configuration";
 
 const testFolderLocation = "/../../../src/test/suite/testFiles/";
-const vocabFolderPath = __dirname + testFolderLocation + ".vocab/";
+const vocabFolderPath = `${path.join(
+  __dirname,
+  testFolderLocation,
+  ".vocab/"
+)}`;
 const vocabFolderUri = vscode.Uri.file(vocabFolderPath);
 
 export const setMaxTranslationKeyLength = async (
@@ -67,10 +71,10 @@ export const runExtractionTest = async ({
   await runTestSetup();
 
   const testFileUri = vscode.Uri.file(
-    path.join(__dirname + testFolderLocation + testFileName)
+    path.join(__dirname, testFolderLocation, testFileName)
   );
   const translationsFileUri = vscode.Uri.file(
-    path.join(vocabFolderPath + "translations.json")
+    path.join(`${vocabFolderPath}translations.json`)
   );
   const testFileDocument = await vscode.workspace.openTextDocument(testFileUri);
   const editor = await vscode.window.showTextDocument(testFileDocument);
