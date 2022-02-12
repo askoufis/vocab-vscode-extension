@@ -4,12 +4,12 @@ import {
   getArgumentsFromJsxStringLiteral,
   removeCurlyBracketsFromString,
   truncateString,
-} from "./utils/stringUtils";
+} from "./utils/string";
 
 import {
   getHighlightString,
   replaceHighlightWithTranslation,
-} from "./utils/editorUtils";
+} from "./utils/editor";
 import { TextDecoder } from "util";
 import { HighlightString, TranslationsFile } from "../../types/translation";
 import { MaxTranslationKeyLength } from "../../types/configuration";

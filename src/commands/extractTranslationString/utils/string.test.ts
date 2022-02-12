@@ -8,7 +8,7 @@ import {
   wrapWithTranslationHook,
   getArgumentsFromJsxStringLiteral,
   truncateString,
-} from "./stringUtils";
+} from "./string";
 
 // Import this global so it.each works, I think mocha is overriding it
 import { it } from "@jest/globals";

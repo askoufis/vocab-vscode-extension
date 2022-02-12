@@ -13,7 +13,7 @@ import {
   wrapWithCurlyBrackets,
   wrapWithDoubleQuotes,
   wrapWithTranslationHook,
-} from "./stringUtils";
+} from "./string";
 
 const startOfFile = new vscode.Position(0, 0);
 
@@ -55,7 +55,7 @@ export const expandSelectionByOneCharacter = (
   return new vscode.Selection(newStartPosition, newEndPosition);
 };
 
-const isJsxOrPropStringLiteral = (type: HighlightType): boolean =>
+const isJsxOrPropValueStringLiteral = (type: HighlightType): boolean =>
   type === "jsxStringLiteral" || type === "propValueStringLiteral";
 
 export const replaceHighlightWithTranslation = async (
@@ -84,7 +84,7 @@ export const replaceHighlightWithTranslation = async (
     translationStringArguments
   );
 
-  if (isJsxOrPropStringLiteral(highlightString.type)) {
+  if (isJsxOrPropValueStringLiteral(highlightString.type)) {
     replacementString = wrapWithCurlyBrackets(replacementString);
   }
 
