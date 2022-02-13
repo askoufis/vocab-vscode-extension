@@ -186,8 +186,3 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
     },
   },
 });
-
-// Babel static analysis https://souporserious.com/use-babel-to-statically-analyze-jsx/
-
-// Example AST
-// https://lihautan.com/babel-ast-explorer/#?eyJiYWJlbFNldHRpbmdzIjp7InZlcnNpb24iOiI3LjQuNSIsImpzeCI6eyJvcHRpb25zIjp7fSwiZW5hYmxlZCI6dHJ1ZX0sInR5cGVzY3JpcHQiOnsib3B0aW9ucyI6e30sImVuYWJsZWQiOnRydWV9fSwidHJlZVNldHRpbmdzIjp7ImhpZGVFbXB0eSI6dHJ1ZSwiaGlkZUxvY2F0aW9uIjp0cnVlLCJoaWRlVHlwZSI6dHJ1ZSwiaGlkZUNvbW1lbnRzIjp0cnVlfSwiY29kZSI6ImNvbnN0IGZvbyA9XG48ZGl2PkJvbmpvdXIgZGUgPGEgaHJlZj1cIi9mb29cIj57Vm9jYWJ9PC9hPiE8L2Rpdj5cblxuY29uc3QgYmFyID0ge1xuICAgIGE6IChjaGlsZHJlbikgPT4gPGEgaHJlZj1cIi9mb29cIj57Y2hpbGRyZW59PC9hPlxufSJ9
