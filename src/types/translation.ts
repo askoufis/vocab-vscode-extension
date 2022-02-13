@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { TransformResult } from "../commands/extractTranslationString/utils/jsxBabelTransform";
 
 const HIGHLIGHT_TYPES = [
   // E.g. const foo = "foo";
@@ -16,14 +17,27 @@ const HIGHLIGHT_TYPES = [
 ] as const;
 export type HighlightType = typeof HIGHLIGHT_TYPES[number];
 
-export interface HighlightString {
+export type HighlightStringNoTransform = {
   /** The string literal value, excluding surrounding quotes if the selection contains quotes */
   value: string;
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** What type of thing was the highlighted text */
-  type: HighlightType;
-}
+  type: Exclude<HighlightType, "stringLiteralAndJsx">;
+};
+
+export type HighlightStringWithTransform = {
+  /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
+  selection: vscode.Selection;
+  /** What type of thing was the highlighted text */
+  type: "stringLiteralAndJsx";
+  /** What type of thing was the highlighted text */
+  transformResult: TransformResult;
+};
+
+export type HighlightString =
+  | HighlightStringNoTransform
+  | HighlightStringWithTransform;
 
 type TranslationKey = string;
 

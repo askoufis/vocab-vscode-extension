@@ -1,13 +1,17 @@
 import * as vscode from "vscode";
 import { MaxTranslationKeyLength } from "../../../types/configuration";
-import { HighlightString, HighlightType } from "../../../types/translation";
+import {
+  HighlightString,
+  HighlightStringWithTransform,
+  HighlightType,
+} from "../../../types/translation";
 import * as codeStrings from "../codeStrings";
+import { transformHighlightContainingJsx } from "./jsxBabelTransform";
 import {
   consolidateMultiLineString,
   getArgumentsFromJsxStringLiteral,
   isDoubleQuoted,
   isSingleQuoted,
-  stripFirstLast,
   stripQuotes,
   truncateString,
   wrapWithCurlyBrackets,
@@ -17,20 +21,20 @@ import {
 
 const startOfFile = new vscode.Position(0, 0);
 
-export const hasUseTranslation = (editor: vscode.TextEditor) => {
+const hasUseTranslations = (editor: vscode.TextEditor) => {
   const documentText = editor.document.getText();
 
   return documentText.includes("useTranslations");
 };
 
-export const insertImports = (builder: vscode.TextEditorEdit) => {
+const insertImports = (builder: vscode.TextEditorEdit) => {
   builder.insert(
     startOfFile,
     `${codeStrings.vocabImport}\n${codeStrings.translationFileImport}\n`
   );
 };
 
-export const getSelectionText = (
+const getSelectionText = (
   document: vscode.TextDocument,
   selection: vscode.Selection
 ): string => {
@@ -41,7 +45,7 @@ export const getSelectionText = (
   return document.getText(selectionRange);
 };
 
-export const expandSelectionByOneCharacter = (
+const expandSelectionByOneCharacter = (
   document: vscode.TextDocument,
   selection: vscode.Selection
 ): vscode.Selection => {
@@ -58,11 +62,45 @@ export const expandSelectionByOneCharacter = (
 const isJsxOrPropValueStringLiteral = (type: HighlightType): boolean =>
   type === "jsxStringLiteral" || type === "propValueStringLiteral";
 
+const replaceAndInsertHook = async (
+  editor: vscode.TextEditor,
+  selection: vscode.Selection,
+  replacementString: string
+) => {
+  await editor.edit((builder) => {
+    if (!hasUseTranslations(editor)) {
+      insertImports(builder);
+
+      const currentSelection = editor.selection;
+      const currentLine = currentSelection.active.line;
+      insertHookCall(currentLine, builder);
+    }
+    builder.replace(selection, replacementString);
+  });
+};
+
+const replaceStringLiteralAndJsx = async (
+  editor: vscode.TextEditor,
+  highlightString: HighlightStringWithTransform
+) => {
+  const {
+    selection,
+    transformResult: { code },
+  } = highlightString;
+
+  await replaceAndInsertHook(editor, selection, code);
+};
+
 export const replaceHighlightWithTranslation = async (
   editor: vscode.TextEditor,
   highlightString: HighlightString,
   maxTranslationKeyLength: MaxTranslationKeyLength
 ) => {
+  if (highlightString.type === "stringLiteralAndJsx") {
+    await replaceStringLiteralAndJsx(editor, highlightString);
+    return;
+  }
+
   const translationStringArguments =
     highlightString.type === "jsxStringLiteral"
       ? getArgumentsFromJsxStringLiteral(highlightString.value)
@@ -88,16 +126,11 @@ export const replaceHighlightWithTranslation = async (
     replacementString = wrapWithCurlyBrackets(replacementString);
   }
 
-  await editor.edit((builder) => {
-    if (!hasUseTranslation(editor)) {
-      insertImports(builder);
-
-      const currentSelection = editor.selection;
-      const currentLine = currentSelection.active.line;
-      insertHookCall(currentLine, builder);
-    }
-    builder.replace(highlightString.selection, replacementString);
-  });
+  await replaceAndInsertHook(
+    editor,
+    highlightString.selection,
+    replacementString
+  );
 };
 
 export const insertHookCall = (
@@ -112,6 +145,15 @@ const analyseSelection = (
   document: vscode.TextDocument,
   originalSelection: vscode.Selection
 ): { selection: vscode.Selection; type: HighlightType } => {
+  const originalSelectionText = getSelectionText(document, originalSelection);
+
+  if (
+    originalSelectionText.includes("<") &&
+    originalSelectionText.includes(">")
+  ) {
+    return { selection: originalSelection, type: "stringLiteralAndJsx" };
+  }
+
   const expandedSelection = expandSelectionByOneCharacter(
     document,
     originalSelection
@@ -138,8 +180,6 @@ const analyseSelection = (
 
     return { selection: expandedSelection, type: "propValueStringLiteral" };
   }
-
-  const originalSelectionText = stripFirstLast(expandedSelectionText);
 
   const isOriginalSelectionSingleQuoted = isSingleQuoted(originalSelectionText);
   const isOriginalSelectionDoubleQuoted = isDoubleQuoted(originalSelectionText);
@@ -171,14 +211,24 @@ export const getHighlightString = (
   const document = editor.document;
   const selection = editor.selection;
 
-  const selectionAnalysis = analyseSelection(document, selection);
+  const { selection: analysisSelection, type } = analyseSelection(
+    document,
+    selection
+  );
+
   let value = consolidateMultiLineString(getSelectionText(document, selection));
-  if (selectionAnalysis.type !== "jsxStringLiteral") {
+  if (type !== "jsxStringLiteral") {
     value = stripQuotes(value);
+  }
+
+  if (type === "stringLiteralAndJsx") {
+    const transformResult = transformHighlightContainingJsx(value);
+    return { type, selection: analysisSelection, transformResult };
   }
 
   return {
     value,
-    ...selectionAnalysis,
+    type,
+    selection: analysisSelection,
   };
 };

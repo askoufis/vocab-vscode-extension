@@ -14,6 +14,31 @@ import { TextDecoder } from "util";
 import { HighlightString, TranslationsFile } from "../../types/translation";
 import { MaxTranslationKeyLength } from "../../types/configuration";
 import { getTranslationsFilePath } from "./utils/file";
+import { getConfiguration } from "../configuration";
+
+const getTranslationStringKeyFromHighlightString = (
+  highlightString: HighlightString
+): string => {
+  if (highlightString.type === "stringLiteralAndJsx") {
+    return highlightString.transformResult.key;
+  }
+
+  if (highlightString.type === "jsxStringLiteral") {
+    return removeCurlyBracketsFromString(highlightString.value);
+  }
+
+  return highlightString.value;
+};
+
+const getTranslationMessageFromHighlightString = (
+  highlightString: HighlightString
+): string => {
+  if (highlightString.type === "stringLiteralAndJsx") {
+    return highlightString.transformResult.message;
+  }
+
+  return highlightString.value;
+};
 
 const addTranslationStringToTranslationsFile = async (
   editor: vscode.TextEditor,
@@ -30,9 +55,7 @@ const addTranslationStringToTranslationsFile = async (
   const hasArguments = translationStringArguments.length > 0;
 
   let translationStringKey =
-    highlightString.type === "jsxStringLiteral"
-      ? removeCurlyBracketsFromString(highlightString.value)
-      : highlightString.value;
+    getTranslationStringKeyFromHighlightString(highlightString);
 
   // For now we'll only truncate keys that don't have arguments
   if (!hasArguments && maxTranslationKeyLength) {
@@ -42,8 +65,11 @@ const addTranslationStringToTranslationsFile = async (
     );
   }
 
+  const translationMessage =
+    getTranslationMessageFromHighlightString(highlightString);
+
   const translationStringObject = {
-    [translationStringKey]: { message: highlightString.value },
+    [translationStringKey]: { message: translationMessage },
   };
 
   try {
@@ -84,17 +110,18 @@ export const extractTranslationStringCommand = async () => {
 
   // Get the translation string from the user's selection
   const highlightString = getHighlightString(editor);
-
-  const maxTranslationKeyLength =
-    vscode.workspace
-      .getConfiguration("vocabHelper")
-      .get<MaxTranslationKeyLength>("maxTranslationKeyLength") || null;
+  const { maxTranslationKeyLength, formatAfterReplace } = getConfiguration();
 
   await replaceHighlightWithTranslation(
     editor,
     highlightString,
     maxTranslationKeyLength
   );
+
+  if (formatAfterReplace) {
+    await vscode.commands.executeCommand("editor.action.formatDocument");
+  }
+
   await addTranslationStringToTranslationsFile(
     editor,
     highlightString,

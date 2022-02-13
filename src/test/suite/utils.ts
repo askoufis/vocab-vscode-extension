@@ -2,7 +2,10 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as path from "path";
 import { TextDecoder } from "util";
-import { MaxTranslationKeyLength } from "../../types/configuration";
+import {
+  FormatAfterReplace,
+  MaxTranslationKeyLength,
+} from "../../types/configuration";
 
 const testFolderLocation = "/../../../src/test/suite/testFiles/";
 const vocabFolderPath = `${path.join(
@@ -20,6 +23,18 @@ export const setMaxTranslationKeyLength = async (
   await configuration.update(
     "vocabHelper.maxTranslationKeyLength",
     maxTranslationKeyLength,
+    vscode.ConfigurationTarget.Global
+  );
+};
+
+export const setFormatAfterReplace = async (
+  formatAfterReplace: FormatAfterReplace
+) => {
+  const configuration = vscode.workspace.getConfiguration();
+
+  await configuration.update(
+    "vocabHelper.formatAfterReplace",
+    formatAfterReplace,
     vscode.ConfigurationTarget.Global
   );
 };
@@ -69,6 +84,8 @@ export const runExtractionTest = async ({
   selection: vscode.Selection;
 }) => {
   await runTestSetup();
+
+  await setFormatAfterReplace(false);
 
   const testFileUri = vscode.Uri.file(
     path.join(__dirname, testFolderLocation, testFileName)

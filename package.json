@@ -2,7 +2,7 @@
   "name": "vocabhelper",
   "displayName": "Vocab Helper",
   "description": "Helper extension for the Vocab i18n framework",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "publisher": "askoufis",
   "repository": {
     "type": "git",
@@ -43,6 +43,11 @@
           "minimum": 0,
           "default": null,
           "description": "Truncate translation keys longer than the specified maximum length"
+        },
+        "vocabHelper.formatAfterReplace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Format the current document after replacing the highlighted translation string"
         }
       }
     },
@@ -69,18 +74,20 @@
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "esbuild-watch": "yarn esbuild-base --sourcemap --watch"
   },
+  "dependencies": {
+    "@babel/core": "7.17.2",
+    "@babel/plugin-syntax-jsx": "7.16.7"
+  },
   "devDependencies": {
-    "@babel/core": "^7.17.2",
-    "@babel/plugin-syntax-jsx": "^7.16.7",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.0.3",
-    "@types/mocha": "^9.0.0",
+    "@types/jest": "^27.4.0",
+    "@types/mocha": "^9.1.0",
     "@types/node": "^14.0.0",
-    "@types/vscode": "^1.61.0",
+    "@types/vscode": "1.61.0",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
-    "esbuild": "^0.13.9",
-    "eslint": "^8.1.0",
+    "esbuild": "^0.14.21",
+    "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-seek": "^7.0.9",
     "eslint-import-resolver-node": "^0.3.6",
@@ -92,10 +99,10 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "glob": "^7.2.0",
-    "jest": "^27.3.1",
-    "mocha": "^9.1.3",
-    "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4",
+    "jest": "^27.5.1",
+    "mocha": "^9.2.0",
+    "ts-jest": "^27.1.3",
+    "typescript": "4.4.4",
     "vscode-test": "^1.6.1"
   }
 }

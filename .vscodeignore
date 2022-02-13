@@ -5,8 +5,13 @@ out/test/**
 src/**
 .gitignore
 .yarnrc
+.nvmrc
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
 **/*.ts
+test/**
+jest.config.js
+.github/
+yarn.lock

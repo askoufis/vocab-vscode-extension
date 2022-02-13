@@ -260,5 +260,41 @@ const MyComponent = () => {
         });
       }
     );
+
+    suite("Component containing a string literal and an element", () => {
+      test("should extract the translation string, insert the translation correctly, add the tag as a parameter and add it to the translations file", async () => {
+        const testFileName = "stringLiteralAndJsx.tsx";
+
+        const start = new vscode.Position(8, 6);
+        const end = new vscode.Position(8, 79);
+        const selection = new vscode.Selection(start, end);
+
+        const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  return (
+    <div>
+      {t("I am a paragraph with some bold text and a link", { b: (children) => <b>{children}</b>, a: (children) => <a href="/foo">{children}</a> })}
+    </div>
+  );
+};
+`;
+
+        const expectedTranslationsFileContents = `{
+  "I am a paragraph with some bold text and a link": {
+    "message": "I am a paragraph with some <b>bold</b> text and a <a>link</a>"
+  }
+}`;
+        await runExtractionTest({
+          testFileName,
+          expectedFileContents,
+          expectedTranslationsFileContents,
+          selection,
+        });
+      });
+    });
   });
 });
