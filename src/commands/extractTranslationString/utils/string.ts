@@ -44,7 +44,7 @@ export const consolidateMultiLineString = (s: string): string => {
 export const getArgumentsFromJsxStringLiteral = (s: string): string[] => {
   let insideCurlyBrackets = false;
   let currentArgument = "";
-  let args: string[] = [];
+  const args: string[] = [];
 
   for (const character of s) {
     if (character === leftCurlyBracket) {

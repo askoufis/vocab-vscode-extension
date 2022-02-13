@@ -1,25 +1,49 @@
 import * as vscode from "vscode";
+import { TransformResult } from "../commands/extractTranslationString/utils/jsxBabelTransform";
 
-const STRING_LITERAL_TYPES = ["regular", "jsx", "prop"] as const;
-export type StringLiteralType = typeof STRING_LITERAL_TYPES[number];
+const HIGHLIGHT_TYPES = [
+  // E.g. const foo = "foo";
+  // Highlight:        ___
+  "stringLiteral",
+  // E.g. return <div>foo</div>
+  // Highlight:       ___
+  "jsxStringLiteral",
+  // E.g. return <Field label="foo" />
+  // Highlight:                ___
+  "propValueStringLiteral",
+  // E.g. return <div>Foo <b>bar</b> foo</div>
+  // Highlight:       __________________
+  "stringLiteralAndJsx",
+] as const;
+export type HighlightType = typeof HIGHLIGHT_TYPES[number];
 
-export interface TranslationString {
+export type HighlightStringNoTransform = {
   /** The string literal value, excluding surrounding quotes if the selection contains quotes */
   value: string;
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
-  /** What type of string literal this is*/
-  type: StringLiteralType;
-}
+  /** What type of thing was the highlighted text */
+  type: Exclude<HighlightType, "stringLiteralAndJsx">;
+};
+
+export type HighlightStringWithTransform = {
+  /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
+  selection: vscode.Selection;
+  /** What type of thing was the highlighted text */
+  type: "stringLiteralAndJsx";
+  /** What type of thing was the highlighted text */
+  transformResult: TransformResult;
+};
+
+export type HighlightString =
+  | HighlightStringNoTransform
+  | HighlightStringWithTransform;
 
 type TranslationKey = string;
 
-interface TranslationStringData {
+interface TranslationString {
   message: string;
   description?: string;
 }
 
-export type TranslationsFileData = Record<
-  TranslationKey,
-  TranslationStringData
->;
+export type TranslationsFile = Record<TranslationKey, TranslationString>;

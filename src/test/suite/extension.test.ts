@@ -1,6 +1,4 @@
-import * as assert from "assert";
 import * as vscode from "vscode";
-import * as path from "path";
 import {
   createUnquotedAndQuotedSelections,
   runExtractionTest,
@@ -154,7 +152,7 @@ const MyComponent = () => {
     });
 
     suite("Component containing a JSX string literal on multiple lines", () => {
-      test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
+      test("should extract the translation string from the multiline JSX string literal, surround the hook call with curly brackets and add it to the translations file", async () => {
         const testFileName = "multiLineJsxString.tsx";
 
         // This is a multi-line selection
@@ -195,7 +193,7 @@ const MyComponent = () => {
       const selections = createUnquotedAndQuotedSelections(6, 19, 6, 22);
 
       selections.map((selection) => {
-        test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
+        test("should extract the translation string from a string literal prop, surround the hook call with curly brackets and add it to the translations file", async () => {
           const testFileName = "propValue.tsx";
 
           const expectedFileContents = `import { useTranslations } from "@vocab/react";
@@ -262,5 +260,41 @@ const MyComponent = () => {
         });
       }
     );
+
+    suite("Component containing a string literal and an element", () => {
+      test("should extract the translation string, insert the translation correctly, add the tag as a parameter and add it to the translations file", async () => {
+        const testFileName = "stringLiteralAndJsx.tsx";
+
+        const start = new vscode.Position(8, 6);
+        const end = new vscode.Position(8, 79);
+        const selection = new vscode.Selection(start, end);
+
+        const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  return (
+    <div>
+      {t("I am a paragraph with some bold text and a link", { b: (children) => <b>{children}</b>, a: (children) => <a href="/foo">{children}</a> })}
+    </div>
+  );
+};
+`;
+
+        const expectedTranslationsFileContents = `{
+  "I am a paragraph with some bold text and a link": {
+    "message": "I am a paragraph with some <b>bold</b> text and a <a>link</a>"
+  }
+}`;
+        await runExtractionTest({
+          testFileName,
+          expectedFileContents,
+          expectedTranslationsFileContents,
+          selection,
+        });
+      });
+    });
   });
 });

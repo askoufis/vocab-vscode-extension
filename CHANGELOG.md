@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2022-02-13
+
+### Added
+
+- `vocabHelper.extractTranslationString` can now handle translation strings with JSX inside them.
+
+  E.g.
+
+  ```tsx
+  const foo = (
+    <div>
+      I am a paragraph with some <b>bold</b> text and a <a href="/foo">link</a>
+    </div>
+  );
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = (
+    <div>
+      {t("I am a paragraph with some bold text and a link", {
+        b: (children) => <b>{children}</b>,
+        a: (children) => <a href="/foo">{children}</a>,
+      })}
+    </div>
+  );
+  ```
+
+#### Configuration
+
+- New `vocabHelper.formatAfterReplace` value toggles whether or not to format the document after replacing the highlighted translation string
+
 ## [0.2.2] - 2021-12-17
 
 Bumping the version to force another release. This is the second time this has happened. Not sure what's going on.

@@ -2,10 +2,17 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as path from "path";
 import { TextDecoder } from "util";
-import { MaxTranslationKeyLength } from "../../types/configuration";
+import {
+  FormatAfterReplace,
+  MaxTranslationKeyLength,
+} from "../../types/configuration";
 
 const testFolderLocation = "/../../../src/test/suite/testFiles/";
-const vocabFolderPath = __dirname + testFolderLocation + ".vocab/";
+const vocabFolderPath = `${path.join(
+  __dirname,
+  testFolderLocation,
+  ".vocab/"
+)}`;
 const vocabFolderUri = vscode.Uri.file(vocabFolderPath);
 
 export const setMaxTranslationKeyLength = async (
@@ -16,6 +23,18 @@ export const setMaxTranslationKeyLength = async (
   await configuration.update(
     "vocabHelper.maxTranslationKeyLength",
     maxTranslationKeyLength,
+    vscode.ConfigurationTarget.Global
+  );
+};
+
+export const setFormatAfterReplace = async (
+  formatAfterReplace: FormatAfterReplace
+) => {
+  const configuration = vscode.workspace.getConfiguration();
+
+  await configuration.update(
+    "vocabHelper.formatAfterReplace",
+    formatAfterReplace,
     vscode.ConfigurationTarget.Global
   );
 };
@@ -66,11 +85,13 @@ export const runExtractionTest = async ({
 }) => {
   await runTestSetup();
 
+  await setFormatAfterReplace(false);
+
   const testFileUri = vscode.Uri.file(
-    path.join(__dirname + testFolderLocation + testFileName)
+    path.join(__dirname, testFolderLocation, testFileName)
   );
   const translationsFileUri = vscode.Uri.file(
-    path.join(vocabFolderPath + "translations.json")
+    path.join(vocabFolderPath, "translations.json")
   );
   const testFileDocument = await vscode.workspace.openTextDocument(testFileUri);
   const editor = await vscode.window.showTextDocument(testFileDocument);

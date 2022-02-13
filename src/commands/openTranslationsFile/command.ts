@@ -16,6 +16,7 @@ export const openTranslationsFileCommand = async () => {
 
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
+  // eslint-disable-next-line no-sync
   if (fs.existsSync(translationsFilePath)) {
     const doc = await vscode.workspace.openTextDocument(translationsFileUri);
 
