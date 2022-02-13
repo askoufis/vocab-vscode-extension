@@ -91,7 +91,7 @@ export const runExtractionTest = async ({
     path.join(__dirname, testFolderLocation, testFileName)
   );
   const translationsFileUri = vscode.Uri.file(
-    path.join(`${vocabFolderPath}translations.json`)
+    path.join(vocabFolderPath, "translations.json")
   );
   const testFileDocument = await vscode.workspace.openTextDocument(testFileUri);
   const editor = await vscode.window.showTextDocument(testFileDocument);
