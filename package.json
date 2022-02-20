@@ -46,7 +46,7 @@
         },
         "vocabHelper.formatAfterReplace": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Format the current document after replacing the highlighted translation string"
         }
       }
