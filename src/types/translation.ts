@@ -11,9 +11,9 @@ const HIGHLIGHT_TYPES = [
   // E.g. return <Field label="foo" />
   // Highlight:                ___
   "propValueStringLiteral",
-  // E.g. return <div>Foo <b>bar</b> foo</div>
-  // Highlight:       __________________
-  "stringLiteralAndJsx",
+  // E.g. return <div>Foo <a href="/bar" >bar</a> {foo}</div>
+  // Highlight:       _________________________________
+  "complexJsx",
 ] as const;
 export type HighlightType = typeof HIGHLIGHT_TYPES[number];
 
@@ -23,14 +23,14 @@ export type HighlightStringNoTransform = {
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** What type of thing was the highlighted text */
-  type: Exclude<HighlightType, "stringLiteralAndJsx">;
+  type: Exclude<HighlightType, "complexJsx">;
 };
 
 export type HighlightStringWithTransform = {
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** What type of thing was the highlighted text */
-  type: "stringLiteralAndJsx";
+  type: "complexJsx";
   /** What type of thing was the highlighted text */
   transformResult: TransformResult;
 };

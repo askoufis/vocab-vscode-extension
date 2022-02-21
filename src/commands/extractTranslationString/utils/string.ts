@@ -22,47 +22,30 @@ export const stripFirstLast = (s: string): string =>
 export const stripQuotes = (s: string): string =>
   isSingleQuoted(s) || isDoubleQuoted(s) ? stripFirstLast(s) : s;
 
-export const wrapWithTranslationHook = (s: string, args?: string[]) => {
-  if (args && args.length > 0) {
-    const argumentsObject = `{${args.join(", ")}}`;
-
-    return `t(${removeCurlyBracketsFromString(s)}, ${argumentsObject})`;
-  }
-
-  return `t(${s})`;
-};
+export const wrapWithTranslationHook = (s: string) => `t(${s})`;
 
 export const wrapWithCurlyBrackets = (s: string) => `{${s}}`;
 
 export const consolidateMultiLineString = (s: string): string => {
   const lines = s.split("\n");
   const trimmedLines = lines.map((line) => line.trim());
+  const sanitizedLines = trimmedLines.map((line) =>
+    line.replace(/\{" "\}/g, " ")
+  );
 
-  return trimmedLines.join(" ");
-};
+  return sanitizedLines.reduce((previous, current, currentIndex) => {
+    const isFirstElement = currentIndex === 0;
+    const isElement = current.startsWith("<");
+    const followsSpace = previous.endsWith(" ");
+    const joinWithoutSpace = isElement || followsSpace || isFirstElement;
 
-export const getArgumentsFromJsxStringLiteral = (s: string): string[] => {
-  let insideCurlyBrackets = false;
-  let currentArgument = "";
-  const args: string[] = [];
-
-  for (const character of s) {
-    if (character === leftCurlyBracket) {
-      insideCurlyBrackets = true;
-    } else if (character === rightCurlyBracket) {
-      insideCurlyBrackets = false;
-      args.push(currentArgument);
-      currentArgument = "";
-    } else if (insideCurlyBrackets) {
-      currentArgument += character;
+    if (joinWithoutSpace) {
+      return `${previous}${current}`;
     }
-  }
 
-  return args;
+    return `${previous} ${current}`;
+  }, "");
 };
-
-export const removeCurlyBracketsFromString = (s: string): string =>
-  s.replace(/\{/g, "").replace(/\}/g, "");
 
 export const truncateString = (
   s: string,
@@ -82,3 +65,24 @@ export const truncateString = (
 
   return s;
 };
+
+export const capitalise = (s: string): string =>
+  `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
+
+export const transformWrapper = "VocabTransform";
+const lengthOfVocabTransformElement = `<${transformWrapper}>`.length;
+
+export const trimTrailingSemicolon = (s: string): string =>
+  s.endsWith(";") ? s.substring(0, s.length - 1) : s;
+
+export const wrapWithTransformWrapper = (s: string): string =>
+  `<${transformWrapper}>${s}</${transformWrapper}>`;
+
+export const removeTransformWrapper = (s: string): string =>
+  s.substring(
+    lengthOfVocabTransformElement,
+    s.length - (lengthOfVocabTransformElement + 1)
+  );
+
+export const containsJavascriptExpression = (s: string): boolean =>
+  s.includes(leftCurlyBracket) && s.includes(rightCurlyBracket);

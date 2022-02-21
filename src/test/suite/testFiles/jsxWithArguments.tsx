@@ -4,11 +4,12 @@ import React from "react";
 
 const MyComponent = () => {
   const { t } = useTranslations(translations);
-  const unreadEmails = 4;
-  const spamEmails = 2;
+  const emails = { unread: 4, spam: 2 };
+  const status = "bad";
   return (
     <div>
-      You have {unreadEmails} unread emails and {spamEmails} spam emails.
+      You have {emails.unread} unread emails and {emails.spam} spam emails. This
+      is {status}.
     </div>
   );
 };

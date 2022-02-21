@@ -1,10 +1,6 @@
 import * as vscode from "vscode";
 
-import {
-  getArgumentsFromJsxStringLiteral,
-  removeCurlyBracketsFromString,
-  truncateString,
-} from "./utils/string";
+import { truncateString } from "./utils/string";
 
 import {
   getHighlightString,
@@ -19,12 +15,8 @@ import { getConfiguration } from "../configuration";
 const getTranslationStringKeyFromHighlightString = (
   highlightString: HighlightString
 ): string => {
-  if (highlightString.type === "stringLiteralAndJsx") {
+  if (highlightString.type === "complexJsx") {
     return highlightString.transformResult.key;
-  }
-
-  if (highlightString.type === "jsxStringLiteral") {
-    return removeCurlyBracketsFromString(highlightString.value);
   }
 
   return highlightString.value;
@@ -33,7 +25,7 @@ const getTranslationStringKeyFromHighlightString = (
 const getTranslationMessageFromHighlightString = (
   highlightString: HighlightString
 ): string => {
-  if (highlightString.type === "stringLiteralAndJsx") {
+  if (highlightString.type === "complexJsx") {
     return highlightString.transformResult.message;
   }
 
@@ -48,17 +40,10 @@ const addTranslationStringToTranslationsFile = async (
   const translationsFilePath = getTranslationsFilePath(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
 
-  const translationStringArguments =
-    highlightString.type === "jsxStringLiteral"
-      ? getArgumentsFromJsxStringLiteral(highlightString.value)
-      : [];
-  const hasArguments = translationStringArguments.length > 0;
-
   let translationStringKey =
     getTranslationStringKeyFromHighlightString(highlightString);
 
-  // For now we'll only truncate keys that don't have arguments
-  if (!hasArguments && maxTranslationKeyLength) {
+  if (maxTranslationKeyLength) {
     translationStringKey = truncateString(
       translationStringKey,
       maxTranslationKeyLength

@@ -1,46 +1,20 @@
 import {
-  removeWrappingVocabTransformElement,
   transformHighlightContainingJsx,
   transformJsxToVocabHook,
   TransformResult,
-  wrapWithVocabTransformElement,
 } from "./jsxBabelTransform";
-
-describe("wrapWithVocabTransformElement", () => {
-  it("should wrap the given string inside a div", () => {
-    const input = 'Bonjour de <a href="/foo">Vocab</a>!!!';
-
-    const result = wrapWithVocabTransformElement(input);
-    const expected =
-      '<VocabTransform>Bonjour de <a href="/foo">Vocab</a>!!!</VocabTransform>';
-
-    expect(result).toBe(expected);
-  });
-});
-
-describe("removeWrappingVocabTransformElement", () => {
-  it("should remove the wrapping div from the given string", () => {
-    const input =
-      '<VocabTransform>Bonjour de <a href="/foo">Vocab</a>!!!</VocabTransform>';
-
-    const result = removeWrappingVocabTransformElement(input);
-    const expected = 'Bonjour de <a href="/foo">Vocab</a>!!!';
-
-    expect(result).toBe(expected);
-  });
-});
 
 describe("transformJsxToVocabHook", () => {
   it("should transform jsx correctly and return the correct translation key and message", () => {
     const input =
-      '<VocabTransform>Bonjour de <a href="/foo">Vocab</a>!!!</VocabTransform>';
+      '<VocabTransform>Bonjour {foo.text} de <a href="/foo">Vocab {bar}</a>!!!</VocabTransform>';
 
     const result = transformJsxToVocabHook(input);
     const expectedCode =
-      '<VocabTransform>{t("Bonjour de Vocab!!!", { a: (children) => <a href="/foo">{children}</a> })}</VocabTransform>;';
+      '<VocabTransform>{t("Bonjour fooText de Vocab bar!!!", { fooText: foo.text, bar, a: (children) => <a href="/foo">{children}</a> })}</VocabTransform>;';
     const expected: TransformResult = {
-      key: "Bonjour de Vocab!!!",
-      message: "Bonjour de <a>Vocab</a>!!!",
+      key: "Bonjour fooText de Vocab bar!!!",
+      message: "Bonjour {fooText} de <a>Vocab {bar}</a>!!!",
       code: expectedCode,
     };
 
