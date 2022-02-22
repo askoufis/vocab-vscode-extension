@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import { MaxTranslationKeyLength } from "../../../types/configuration";
+import { MaxTranslationKeyLength } from "../types/configuration";
 import {
   HighlightString,
   HighlightStringWithTransform,
   HighlightType,
-} from "../../../types/translation";
-import * as codeStrings from "../codeStrings";
+} from "../types/translation";
+import * as codeStrings from "../commands/extractTranslationString/codeStrings";
 import { transformHighlightContainingJsx } from "./jsxBabelTransform";
 import {
   consolidateMultiLineString,

@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 
-import { truncateString } from "./utils/string";
+import { truncateString } from "../../utils/string";
 
 import {
   getHighlightString,
   replaceHighlightWithTranslation,
-} from "./utils/editor";
+} from "../../utils/editor";
 import { TextDecoder } from "util";
 import { HighlightString, TranslationsFile } from "../../types/translation";
 import { MaxTranslationKeyLength } from "../../types/configuration";
-import { getTranslationsFilePath } from "./utils/file";
+import { getTranslationsFilePath } from "../../utils/file";
 import { getConfiguration } from "../configuration";
 
 const getTranslationStringKeyFromHighlightString = (
