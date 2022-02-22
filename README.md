@@ -30,7 +30,7 @@ This extension contributes the following commands:
 ## Configuration
 
 - `vocabHelper.maxTranslationKeyLength`: Truncate translation keys longer than a specified maximum length
-- `vocabHelper.formatAfterReplace`: Format the current document after replacing the highlighted translation string
+- `vocabHelper.formatAfterReplace` (defaults to `false`): Format the current document after replacing the highlighted translation string
 
 ## Release Notes
 

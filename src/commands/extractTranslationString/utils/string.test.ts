@@ -4,10 +4,13 @@ import {
   isSingleQuoted,
   stripFirstLast,
   stripQuotes,
-  removeCurlyBracketsFromString,
   wrapWithTranslationHook,
-  getArgumentsFromJsxStringLiteral,
   truncateString,
+  capitalise,
+  removeTransformWrapper,
+  wrapWithTransformWrapper,
+  trimTrailingSemicolon,
+  containsJavascriptExpression,
 } from "./string";
 
 // Import this global so it.each works, I think mocha is overriding it
@@ -108,16 +111,6 @@ describe("stringUtils", () => {
 
       expect(result).toBe(expected);
     });
-
-    it("should wrap the string correctly with arguments", () => {
-      const testString = '"Test"';
-      const args = ["foo", "bar"];
-      const expected = 't("Test", {foo, bar})';
-
-      const result = wrapWithTranslationHook(testString, args);
-
-      expect(result).toBe(expected);
-    });
   });
 
   describe("consolidateMultiLineString", () => {
@@ -129,6 +122,23 @@ describe("stringUtils", () => {
       expect(result).toBe(singleLineString);
     });
 
+    it("should replace expression space with space characters", () => {
+      const stringWithExpressionSpace = 'A string{" "}with{" "}\nsome spaces';
+
+      const result = consolidateMultiLineString(stringWithExpressionSpace);
+
+      expect(result).toBe("A string with some spaces");
+    });
+
+    it("should not nested elements with spaces in-between", () => {
+      const stringWithExpressionSpace =
+        'A string with{" "}\n<div>\n<b>nested</b>\n</div>{" "}\nelements';
+
+      const result = consolidateMultiLineString(stringWithExpressionSpace);
+
+      expect(result).toBe("A string with <div><b>nested</b></div> elements");
+    });
+
     it("should convert a multi-line string into a single line string", () => {
       const multiLineString = "First line.\n    Second line.";
       const expected = "First line. Second line.";
@@ -136,55 +146,6 @@ describe("stringUtils", () => {
       const result = consolidateMultiLineString(multiLineString);
 
       expect(result).toBe(expected);
-    });
-  });
-
-  describe("getArgumentsFromJsxStringLiteral", () => {
-    it("should return a list with a single argument when the string contains 1 argument", () => {
-      const testString = "This string contains {num} arguments";
-      const expected = ["num"];
-
-      const result = getArgumentsFromJsxStringLiteral(testString);
-
-      expect(result).toEqual(expected);
-    });
-
-    it("should return a list with multiple arguments when the string contains multiple arguments", () => {
-      const testString =
-        "This string contains {num} arguments and {value} letters";
-      const expected = ["num", "value"];
-
-      const result = getArgumentsFromJsxStringLiteral(testString);
-
-      expect(result).toEqual(expected);
-    });
-
-    it("should return an empty list when the string does not contain arguments", () => {
-      const testString = "This string contains no arguments";
-      const expected: string[] = [];
-
-      const result = getArgumentsFromJsxStringLiteral(testString);
-
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe("removeCurlyBracketsFromString", () => {
-    it("should not alter a string that does not contain curly brackets", () => {
-      const testString = "I have no curly brackets";
-
-      const result = removeCurlyBracketsFromString(testString);
-
-      expect(result).toEqual(testString);
-    });
-
-    it("should remove all curly brackets from a string", () => {
-      const testString = "{I have{}} {some} {curly} brackets}{";
-      const expected = "I have some curly brackets";
-
-      const result = removeCurlyBracketsFromString(testString);
-
-      expect(result).toEqual(expected);
     });
   });
 
@@ -217,6 +178,84 @@ describe("stringUtils", () => {
 
       const expected = "I'm a significantly...";
       expect(result).toBe(expected);
+    });
+  });
+
+  describe("capitalise", () => {
+    it("capitalise the first letter of a string if it is lowercase", () => {
+      const s = "test";
+
+      const result = capitalise(s);
+
+      expect(result).toBe("Test");
+    });
+
+    it("not change the input string if it already capitalised", () => {
+      const s = "Test";
+
+      const result = capitalise(s);
+
+      expect(result).toBe(s);
+    });
+  });
+
+  describe("trimTrailingSemicolon", () => {
+    it("should trim the trailing semicolon if the string that ends with a semicolon", () => {
+      const s = "test;";
+
+      const result = trimTrailingSemicolon(s);
+
+      expect(result).toBe("test");
+    });
+
+    it("should leave the string unchanged if it does not end in a semicolon", () => {
+      const s = "test";
+
+      const result = trimTrailingSemicolon(s);
+
+      expect(result).toBe("test");
+    });
+  });
+
+  describe("wrapWithTransformWrapper", () => {
+    it("should wrap the given string inside a div", () => {
+      const input = 'Bonjour de <a href="/foo">Vocab</a>!!!';
+
+      const result = wrapWithTransformWrapper(input);
+      const expected =
+        '<VocabTransform>Bonjour de <a href="/foo">Vocab</a>!!!</VocabTransform>';
+
+      expect(result).toBe(expected);
+    });
+  });
+
+  describe("removeTransformWrapper", () => {
+    it("should remove the wrapping div from the given string", () => {
+      const input =
+        '<VocabTransform>Bonjour de <a href="/foo">Vocab</a>!!!</VocabTransform>';
+
+      const result = removeTransformWrapper(input);
+      const expected = 'Bonjour de <a href="/foo">Vocab</a>!!!';
+
+      expect(result).toBe(expected);
+    });
+  });
+
+  describe("containsJavascriptExpression", () => {
+    it("should return true if the string contains a javascript expression", () => {
+      const s = "I have an expression {foo.bar}";
+
+      const result = containsJavascriptExpression(s);
+
+      expect(result).toBe(true);
+    });
+
+    it("should return false if the string does not contain a javascript expression", () => {
+      const s = "I don't have an expression";
+
+      const result = containsJavascriptExpression(s);
+
+      expect(result).toBe(false);
     });
   });
 });

@@ -9,7 +9,7 @@ import * as codeStrings from "../codeStrings";
 import { transformHighlightContainingJsx } from "./jsxBabelTransform";
 import {
   consolidateMultiLineString,
-  getArgumentsFromJsxStringLiteral,
+  containsJavascriptExpression,
   isDoubleQuoted,
   isSingleQuoted,
   stripQuotes,
@@ -96,21 +96,14 @@ export const replaceHighlightWithTranslation = async (
   highlightString: HighlightString,
   maxTranslationKeyLength: MaxTranslationKeyLength
 ) => {
-  if (highlightString.type === "stringLiteralAndJsx") {
+  if (highlightString.type === "complexJsx") {
     await replaceStringLiteralAndJsx(editor, highlightString);
     return;
   }
 
-  const translationStringArguments =
-    highlightString.type === "jsxStringLiteral"
-      ? getArgumentsFromJsxStringLiteral(highlightString.value)
-      : [];
-  const hasArguments = translationStringArguments.length > 0;
-
   let replacementString = highlightString.value;
 
-  // For now we'll only truncate keys that don't have arguments
-  if (!hasArguments && maxTranslationKeyLength) {
+  if (maxTranslationKeyLength) {
     replacementString = truncateString(
       replacementString,
       maxTranslationKeyLength
@@ -118,8 +111,7 @@ export const replaceHighlightWithTranslation = async (
   }
 
   replacementString = wrapWithTranslationHook(
-    wrapWithDoubleQuotes(replacementString),
-    translationStringArguments
+    wrapWithDoubleQuotes(replacementString)
   );
 
   if (isJsxOrPropValueStringLiteral(highlightString.type)) {
@@ -148,10 +140,11 @@ const analyseSelection = (
   const originalSelectionText = getSelectionText(document, originalSelection);
 
   if (
-    originalSelectionText.includes("<") &&
-    originalSelectionText.includes(">")
+    (originalSelectionText.includes("<") &&
+      originalSelectionText.includes(">")) ||
+    containsJavascriptExpression(originalSelectionText)
   ) {
-    return { selection: originalSelection, type: "stringLiteralAndJsx" };
+    return { selection: originalSelection, type: "complexJsx" };
   }
 
   const expandedSelection = expandSelectionByOneCharacter(
@@ -217,12 +210,14 @@ export const getHighlightString = (
   );
 
   let value = consolidateMultiLineString(getSelectionText(document, selection));
+
   if (type !== "jsxStringLiteral") {
     value = stripQuotes(value);
   }
 
-  if (type === "stringLiteralAndJsx") {
+  if (type === "complexJsx") {
     const transformResult = transformHighlightContainingJsx(value);
+
     return { type, selection: analysisSelection, transformResult };
   }
 

@@ -118,7 +118,7 @@ const MyComponent = () => {
         const testFileName = "jsxWithArguments.tsx";
 
         const start = new vscode.Position(10, 6);
-        const end = new vscode.Position(10, 73);
+        const end = new vscode.Position(11, 18);
         const selection = new vscode.Selection(start, end);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
@@ -127,19 +127,19 @@ import React from "react";
 
 const MyComponent = () => {
   const { t } = useTranslations(translations);
-  const unreadEmails = 4;
-  const spamEmails = 2;
+  const emails = { unread: 4, spam: 2 };
+  const status = "bad";
   return (
     <div>
-      {t("You have unreadEmails unread emails and spamEmails spam emails.", {unreadEmails, spamEmails})}
+      {t("You have emailsUnread unread emails and emailsSpam spam emails. This is status.", { emailsUnread: emails.unread, emailsSpam: emails.spam, status })}
     </div>
   );
 };
 `;
 
         const expectedTranslationsFileContents = `{
-  "You have unreadEmails unread emails and spamEmails spam emails.": {
-    "message": "You have {unreadEmails} unread emails and {spamEmails} spam emails."
+  "You have emailsUnread unread emails and emailsSpam spam emails. This is status.": {
+    "message": "You have {emailsUnread} unread emails and {emailsSpam} spam emails. This is {status}."
   }
 }`;
         await runExtractionTest({
@@ -261,12 +261,12 @@ const MyComponent = () => {
       }
     );
 
-    suite("Component containing a string literal and an element", () => {
+    suite("Component containing complex JSX", () => {
       test("should extract the translation string, insert the translation correctly, add the tag as a parameter and add it to the translations file", async () => {
-        const testFileName = "stringLiteralAndJsx.tsx";
+        const testFileName = "complexJsx.tsx";
 
         const start = new vscode.Position(8, 6);
-        const end = new vscode.Position(8, 79);
+        const end = new vscode.Position(15, 40);
         const selection = new vscode.Selection(start, end);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
@@ -277,15 +277,15 @@ const MyComponent = () => {
   const { t } = useTranslations(translations);
   return (
     <div>
-      {t("I am a paragraph with some bold text and a link", { b: (children) => <b>{children}</b>, a: (children) => <a href="/foo">{children}</a> })}
+      {t("I am a paragraph with some bold and italic text and a link", { b: (children) => <b>{children}</b>, span: (children) => <span>{children}</span>, i: (children) => <i>{children}</i>, div: (children) => <div className="bar">{children}</div>, a: (children) => <a href="/foo">{children}</a> })}
     </div>
   );
 };
 `;
 
         const expectedTranslationsFileContents = `{
-  "I am a paragraph with some bold text and a link": {
-    "message": "I am a paragraph with some <b>bold</b> text and a <a>link</a>"
+  "I am a paragraph with some bold and italic text and a link": {
+    "message": "I am a paragraph with some <div><span><b>bold</b></span> and <i>italic</i></div> text and a <a>link</a>"
   }
 }`;
         await runExtractionTest({

@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2022-02-13
+
+### Changed
+
+- `vocabHelper.formatAfterReplace` now defaults to `false` instead of `true`. Defaulting to `true` could result in annoying messages for users that do not have a formatter configured.
+
+### Added
+
+- `vocabHelper.extractTranslationString` can now handle member expressions (e.g. `foo.bar`) within javascript expressions contained within JSX
+
+  E.g.
+
+  ```tsx
+  const foo = (
+    <div>I have a {foo.bar} member expression</div>
+    //   ____________________________________
+    //   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Highlighted
+  );
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = (
+    <div>{t("I have a fooBar member expression", { fooBar: foo.bar })}</div>
+  );
+
+  // Translation messaged: "I have a {fooBar} member expression"
+  ```
+
+- `vocabHelper.extractTranslationString` now handles javascript space expressions (`{" "}`) and multi-line nested elements better
+- `vocabHelper.extractTranslationString` was restricted to only truncating JSX that didn't contain any arguments. This restriction has now been removed.
+
+### Internal
+
+- Utility function refactor
+
 ## [0.3.1] - 2022-02-14
 
 Version bump to fix release.
@@ -36,6 +73,8 @@ Version bump to fix release.
       })}
     </div>
   );
+
+  // Translation message: "I am a paragraph with some <b>bold</b> text and a <a>link</a>"
   ```
 
 #### Configuration

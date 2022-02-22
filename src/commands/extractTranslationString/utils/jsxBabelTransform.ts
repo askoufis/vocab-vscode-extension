@@ -1,34 +1,29 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { transformSync, Visitor } from "@babel/core";
 import * as t from "@babel/types";
+import {
+  getJsxElementName,
+  isJsxVocabTransformElement,
+  memberExpressionToObjectProperty,
+} from "./babel";
+import {
+  wrapWithTransformWrapper,
+  trimTrailingSemicolon,
+  removeTransformWrapper,
+} from "./string";
 
 export const transformHighlightContainingJsx = (s: string): TransformResult => {
   // The highlighted code is likely not valid JSX by itself, so we
   // wrap it in an element babel can parse it
-  const validJsxCode = wrapWithVocabTransformElement(s);
+  const validJsxCode = wrapWithTransformWrapper(s);
 
   const { key, message, code } = transformJsxToVocabHook(validJsxCode);
 
   const trimmedCode = trimTrailingSemicolon(code);
-  const unwrappedCode = removeWrappingVocabTransformElement(trimmedCode);
+  const unwrappedCode = removeTransformWrapper(trimmedCode);
 
   return { key, message, code: unwrappedCode };
 };
-
-const elementName = "VocabTransform";
-const lengthOfVocabTransformElement = `<${elementName}>`.length;
-
-const trimTrailingSemicolon = (s: string): string =>
-  s.substring(0, s.length - 1);
-
-export const wrapWithVocabTransformElement = (s: string): string =>
-  `<${elementName}>${s}</${elementName}>`;
-
-export const removeWrappingVocabTransformElement = (s: string): string =>
-  s.substring(
-    lengthOfVocabTransformElement,
-    s.length - (lengthOfVocabTransformElement + 1)
-  );
 
 interface State {
   key: string;
@@ -47,6 +42,7 @@ interface PluginOptions {
 
 interface PluginState extends State {
   translationHookProperties: t.ObjectProperty[];
+  currentElementName: string[];
   opts: PluginOptions;
 }
 
@@ -70,55 +66,38 @@ export const transformJsxToVocabHook = (
   return { ...transformResult, code: code || "" };
 };
 
-const getTranslationMessageFromChildren = (
-  children: t.JSXElement["children"]
-): string => {
-  let message = "";
-
-  children.forEach((child) => {
-    if (child.type === "JSXText") {
-      message = `${message}${child.value}`;
-    } else if (child.type === "JSXElement") {
-      const openingElementName = child.openingElement.name;
-
-      if (t.isJSXIdentifier(openingElementName)) {
-        const name = openingElementName.name;
-        const openingElement = `<${name}>`;
-        const closingElement = `</${name}>`;
-
-        const firstChild = child.children[0];
-        if (t.isJSXText(firstChild)) {
-          const firstChildText = firstChild.value;
-          message = `${message}${openingElement}${firstChildText}${closingElement}`;
-        }
-      }
-    }
-  });
-
-  return message;
-};
-
-const getJsxElementName = (jsxElement: t.JSXElement): string => {
-  const openingElementName = jsxElement.openingElement.name;
-  if (t.isJSXIdentifier(openingElementName)) {
-    return openingElementName.name;
-  }
-
-  // Throw instead?
-  return "error";
-};
-
-const isJsxVocabTransformElement = (jsxElement: t.JSXElement): boolean => {
-  const openingElementName = jsxElement.openingElement.name;
-  if (t.isJSXIdentifier(openingElementName)) {
-    return openingElementName.name === elementName;
-  }
-
-  return false;
-};
-
 const childrenIdentifier = t.identifier("children");
 const translationHookIdentifier = t.identifier("t");
+
+const jsxExpressionContainerVisitor: Visitor<PluginState> = {
+  MemberExpression: (path, state) => {
+    if (t.isJSXExpressionContainer(path.parent)) {
+      const { objectProperty, keyString } = memberExpressionToObjectProperty(
+        path.node
+      );
+      state.key = `${state.key}${keyString}`;
+      state.message = `${state.message}{${keyString}}`;
+      state.translationHookProperties.push(objectProperty);
+    }
+  },
+  Identifier: ({ node, parent }, state) => {
+    if (t.isJSXExpressionContainer(parent)) {
+      const keyAndValue = t.identifier(node.name);
+      const computed = false;
+      const shorthand = true;
+      const objectProperty = t.objectProperty(
+        keyAndValue,
+        keyAndValue,
+        computed,
+        shorthand
+      );
+      state.translationHookProperties.push(objectProperty);
+
+      state.key = `${state.key}${node.name}`;
+      state.message = `${state.message}{${node.name}}`;
+    }
+  },
+};
 
 const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
   visitor: {
@@ -127,6 +106,7 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
         state.key = "";
         state.message = "";
         state.translationHookProperties = [];
+        state.currentElementName = [];
       },
       exit: (_path, state) => {
         state.opts.onTreeExit({
@@ -139,13 +119,36 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
       enter: (path, state) => {
         const element = path.node;
 
-        if (isJsxVocabTransformElement(element)) {
-          const children = element.children;
-          state.message = getTranslationMessageFromChildren(children);
+        if (!isJsxVocabTransformElement(element)) {
+          const openingElementName = element.openingElement.name;
+
+          // TODO: Handle the other possible opening element name types
+          if (t.isJSXIdentifier(openingElementName)) {
+            const name = openingElementName.name;
+            state.currentElementName.push(name);
+            const openingElement = `<${name}>`;
+
+            state.message = `${state.message}${openingElement}`;
+          }
         }
       },
       exit: (path, state) => {
         const element = path.node;
+
+        // Update message
+        if (!isJsxVocabTransformElement(element)) {
+          const openingElementName = element.openingElement.name;
+
+          // TODO: Handle the other possible opening element name types
+          if (t.isJSXIdentifier(openingElementName)) {
+            const name = state.currentElementName.pop();
+            const closingElement = `</${name}>`;
+
+            state.message = `${state.message}${closingElement}`;
+          }
+        }
+
+        // Transform into hook arguments
         if (isJsxVocabTransformElement(element)) {
           const keyStringLiteral = t.stringLiteral(state.key);
           const hookParameters = t.objectExpression(
@@ -158,14 +161,9 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
           );
           path.node.children = [t.jSXExpressionContainer(hookCallExpression)];
         } else {
-          // Assumption: This JSXElement has a single JSXText as its child
-          const firstChild = path.get("children.0");
-
-          if (!Array.isArray(firstChild)) {
-            firstChild.replaceWith(
-              t.jsxExpressionContainer(childrenIdentifier)
-            );
-          }
+          // Assumption: This JSXElement has no nested children, so we just replace
+          // all its children with a single children identifier
+          path.node.children = [t.jsxExpressionContainer(childrenIdentifier)];
 
           const propertyKey = t.identifier(getJsxElementName(path.node));
 
@@ -183,6 +181,12 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
     JSXText: (path, state) => {
       const text = path.node.value;
       state.key = `${state.key}${text}`;
+      state.message = `${state.message}${text}`;
+    },
+    JSXExpressionContainer: (path, state) => {
+      if (t.isJSXElement(path.parent)) {
+        path.traverse(jsxExpressionContainerVisitor, state);
+      }
     },
   },
 });
