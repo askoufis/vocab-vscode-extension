@@ -18,7 +18,7 @@
     "onCommand:vocabHelper.extractTranslationString",
     "onCommand:vocabHelper.openTranslationsFile"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -60,18 +60,18 @@
     ]
   },
   "scripts": {
-    "compile": "tsc -p ./",
+    "compile": "tsc",
     "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
+    "watch": "tsc --watch",
     "pretest": "yarn compile && yarn lint",
     "test": "node ./out/test/runTest.js",
     "test:unit": "yarn jest",
     "test:watch": "yarn jest --watch",
     "package": "yarn build:release && vsce package",
-    "test-compile": "tsc -p ./",
+    "test-compile": "tsc",
     "build:release": "yarn esbuild-base --minify",
     "esbuild": "yarn esbuild-base --sourcemap",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild-watch": "yarn esbuild-base --sourcemap --watch"
   },
   "dependencies": {

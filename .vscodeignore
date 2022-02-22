@@ -1,8 +1,8 @@
-.vscode/**
+.vscode
 .vscode-test/**
-out/test/**
-
-src/**
+out
+node_modules
+src
 .gitignore
 .yarnrc
 .nvmrc
@@ -11,7 +11,6 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
-test/**
 jest.config.js
 .github/
 yarn.lock
