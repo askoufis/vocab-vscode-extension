@@ -12,5 +12,7 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 jest.config.js
-.github/
+.github
 yarn.lock
+.yarnrc
+CHANGELOG.md
