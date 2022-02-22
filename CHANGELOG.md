@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Errors thrown during command execution will now be shown to the user. These errors could be extension errors or dependency errors. Currently the extension makes no effort to distinguish between the two but may do so in the future.
 
+### Internal
+
+- Tweaked some config so that the bundled and minified extension is what is being published now, rather than the plain `tsc` output. Coincidentally, this is what was causing the publishing issues I've been having; `tsc` hadn't been run for a while so the published code was stale. This shouldn't happen again going forward.
+
 ## [0.4.0] - 2022-02-21
 
 ### Changed
