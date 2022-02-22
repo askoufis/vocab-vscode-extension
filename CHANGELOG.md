@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2022-02-13
+## [0.5.0] - 2022-02-22
+
+### Added
+
+- Errors thrown during command execution will now be shown to the user. These errors could be extension errors or dependency errors. Currently the extension makes no effort to distinguish between the two but may do so in the future.
+
+## [0.4.0] - 2022-02-21
 
 ### Changed
 

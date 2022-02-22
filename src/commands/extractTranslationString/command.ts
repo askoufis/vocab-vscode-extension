@@ -11,6 +11,7 @@ import { HighlightString, TranslationsFile } from "../../types/translation";
 import { MaxTranslationKeyLength } from "../../types/configuration";
 import { getTranslationsFilePath } from "../../utils/file";
 import { getConfiguration } from "../configuration";
+import { showError } from "../../utils/error";
 
 const getTranslationStringKeyFromHighlightString = (
   highlightString: HighlightString
@@ -88,28 +89,32 @@ const addTranslationStringToTranslationsFile = async (
 };
 
 export const extractTranslationStringCommand = async () => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    return;
+  try {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      throw new Error("Window has no active text editor. Please open a file.");
+    }
+
+    // Get the translation string from the user's selection
+    const highlightString = getHighlightString(editor);
+    const { maxTranslationKeyLength, formatAfterReplace } = getConfiguration();
+
+    await replaceHighlightWithTranslation(
+      editor,
+      highlightString,
+      maxTranslationKeyLength
+    );
+
+    if (formatAfterReplace) {
+      await vscode.commands.executeCommand("editor.action.formatDocument");
+    }
+
+    await addTranslationStringToTranslationsFile(
+      editor,
+      highlightString,
+      maxTranslationKeyLength
+    );
+  } catch (error) {
+    showError(error);
   }
-
-  // Get the translation string from the user's selection
-  const highlightString = getHighlightString(editor);
-  const { maxTranslationKeyLength, formatAfterReplace } = getConfiguration();
-
-  await replaceHighlightWithTranslation(
-    editor,
-    highlightString,
-    maxTranslationKeyLength
-  );
-
-  if (formatAfterReplace) {
-    await vscode.commands.executeCommand("editor.action.formatDocument");
-  }
-
-  await addTranslationStringToTranslationsFile(
-    editor,
-    highlightString,
-    maxTranslationKeyLength
-  );
 };

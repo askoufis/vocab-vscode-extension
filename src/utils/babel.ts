@@ -7,8 +7,9 @@ export const getJsxElementName = (jsxElement: t.JSXElement): string => {
     return openingElementName.name;
   }
 
-  // Throw instead?
-  return "error";
+  throw new Error(
+    "Member expression and namespaced identifiers are not supported yet"
+  );
 };
 
 export const isJsxVocabTransformElement = (

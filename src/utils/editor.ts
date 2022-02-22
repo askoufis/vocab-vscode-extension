@@ -79,7 +79,7 @@ const replaceAndInsertHook = async (
   });
 };
 
-const replaceStringLiteralAndJsx = async (
+const replaceComplexJsx = async (
   editor: vscode.TextEditor,
   highlightString: HighlightStringWithTransform
 ) => {
@@ -95,9 +95,9 @@ export const replaceHighlightWithTranslation = async (
   editor: vscode.TextEditor,
   highlightString: HighlightString,
   maxTranslationKeyLength: MaxTranslationKeyLength
-) => {
+): Promise<void> => {
   if (highlightString.type === "complexJsx") {
-    await replaceStringLiteralAndJsx(editor, highlightString);
+    await replaceComplexJsx(editor, highlightString);
     return;
   }
 
@@ -195,7 +195,7 @@ const analyseSelection = (
       ? "jsxStringLiteral"
       : "stringLiteral";
 
-  return isExpandedSelectionQuoted ? { selection, type } : { selection, type };
+  return { selection, type };
 };
 
 export const getHighlightString = (
