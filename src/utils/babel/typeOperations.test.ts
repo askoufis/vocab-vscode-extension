@@ -1,11 +1,11 @@
 import * as t from "@babel/types";
+import { transformWrapper } from "../string";
 import {
   flattenMemberExpression,
   getJsxElementName,
   isJsxVocabTransformElement,
   memberExpressionToObjectProperty,
-} from "./babel";
-import { transformWrapper } from "./string";
+} from "./typeOperations";
 
 const createJsxElement = (elementName: string): t.JSXElement => {
   const elementNameIdentifier = t.jsxIdentifier(elementName);

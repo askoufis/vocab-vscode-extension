@@ -2,7 +2,7 @@ import {
   transformHighlightContainingJsx,
   transformJsxToVocabHook,
   TransformResult,
-} from "./jsxBabelTransform";
+} from "./transform";
 
 describe("transformJsxToVocabHook", () => {
   it("should transform jsx correctly and return the correct translation key and message", () => {

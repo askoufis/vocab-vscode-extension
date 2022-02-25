@@ -1,5 +1,5 @@
 import * as t from "@babel/types";
-import { capitalise, transformWrapper } from "./string";
+import { capitalise, transformWrapper } from "../string";
 
 export const getJsxElementName = (jsxElement: t.JSXElement): string => {
   const openingElementName = jsxElement.openingElement.name;

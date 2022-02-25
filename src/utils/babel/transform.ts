@@ -5,12 +5,12 @@ import {
   getJsxElementName,
   isJsxVocabTransformElement,
   memberExpressionToObjectProperty,
-} from "./babel";
+} from "./typeOperations";
 import {
   wrapWithTransformWrapper,
   trimTrailingSemicolon,
   removeTransformWrapper,
-} from "./string";
+} from "../string";
 
 export const transformHighlightContainingJsx = (s: string): TransformResult => {
   // The highlighted code is likely not valid JSX by itself, so we

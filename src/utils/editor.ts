@@ -6,7 +6,7 @@ import {
   HighlightType,
 } from "../types/translation";
 import * as codeStrings from "../commands/extractTranslationString/codeStrings";
-import { transformHighlightContainingJsx } from "./jsxBabelTransform";
+import { transformHighlightContainingJsx } from "./babel/transform";
 import {
   consolidateMultiLineString,
   containsJavascriptExpression,
