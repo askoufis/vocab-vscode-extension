@@ -1,19 +1,13 @@
 import * as t from "@babel/types";
 import { transformWrapper } from "../string";
+import { createJsxElement } from "./helpers";
 import {
+  createElementRendererObjectProperty,
   flattenMemberExpression,
   getJsxElementName,
   isJsxVocabTransformElement,
   memberExpressionToObjectProperty,
 } from "./typeOperations";
-
-const createJsxElement = (elementName: string): t.JSXElement => {
-  const elementNameIdentifier = t.jsxIdentifier(elementName);
-  const openingElement = t.jsxOpeningElement(elementNameIdentifier, []);
-  const closingElement = t.jsxClosingElement(elementNameIdentifier);
-
-  return t.jSXElement(openingElement, closingElement, []);
-};
 
 describe("babel utils", () => {
   describe("getJsxElementName", () => {
@@ -122,6 +116,26 @@ describe("babel utils", () => {
         expect(result.keyString).toEqual(expectedKeyString);
         expect(result.objectProperty).toEqual(expectedObjectProperty);
       });
+    });
+  });
+
+  describe("createElementRendererObjectProperty", () => {
+    it("should create an object property from a jsx element", () => {
+      const jsxElement = createJsxElement("button", [t.jsxText("click me")]);
+
+      const objectProperty = createElementRendererObjectProperty(jsxElement);
+
+      expect(objectProperty).toEqual(
+        t.objectProperty(
+          t.identifier("button"),
+          t.arrowFunctionExpression(
+            [t.identifier("children")],
+            createJsxElement("button", [
+              t.jsxExpressionContainer(t.identifier("children")),
+            ])
+          )
+        )
+      );
     });
   });
 });

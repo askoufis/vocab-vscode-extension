@@ -7,6 +7,7 @@ export const getJsxElementName = (jsxElement: t.JSXElement): string => {
     return openingElementName.name;
   }
 
+  // TODO: Handle the other possible opening element name types
   throw new Error(
     "Member expression and namespaced identifiers are not supported yet"
   );
@@ -58,4 +59,24 @@ export const memberExpressionToObjectProperty = (
   // The caller could get the key string from the object property, but it's a bit tedious
   // so it's easier to just return it alongside for now
   return { objectProperty, keyString };
+};
+
+const childrenIdentifier = t.identifier("children");
+
+export const createElementRendererObjectProperty = (
+  jsxElement: t.JSXElement
+): t.ObjectProperty => {
+  // Assumption: This JSXElement has no nested children, so we just replace
+  // all its children with a single children identifier
+  jsxElement.children = [t.jsxExpressionContainer(childrenIdentifier)];
+
+  const propertyKey = t.identifier(getJsxElementName(jsxElement));
+
+  const arrowFunctionBody = jsxElement;
+  const propertyValue = t.arrowFunctionExpression(
+    [childrenIdentifier],
+    arrowFunctionBody
+  );
+
+  return t.objectProperty(propertyKey, propertyValue);
 };

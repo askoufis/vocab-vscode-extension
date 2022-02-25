@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JSXElement exit visitor when the element is not the VocabTransform element should append its closing tag to the message and add its render function to the translation hook properties 1`] = `
+Object {
+  "elementNameStack": Array [],
+  "key": "Existing text click me",
+  "message": "Existing text <button>click me</button>",
+  "translationHookProperties": Array [
+    Object {
+      "computed": false,
+      "decorators": null,
+      "key": Object {
+        "name": "button",
+        "type": "Identifier",
+      },
+      "shorthand": false,
+      "type": "ObjectProperty",
+      "value": Object {
+        "async": false,
+        "body": Object {
+          "children": Array [
+            Object {
+              "expression": Object {
+                "name": "children",
+                "type": "Identifier",
+              },
+              "type": "JSXExpressionContainer",
+            },
+          ],
+          "closingElement": Object {
+            "name": Object {
+              "name": "button",
+              "type": "JSXIdentifier",
+            },
+            "type": "JSXClosingElement",
+          },
+          "openingElement": Object {
+            "attributes": Array [],
+            "name": Object {
+              "name": "button",
+              "type": "JSXIdentifier",
+            },
+            "selfClosing": false,
+            "type": "JSXOpeningElement",
+          },
+          "selfClosing": null,
+          "type": "JSXElement",
+        },
+        "params": Array [
+          Object {
+            "name": "children",
+            "type": "Identifier",
+          },
+        ],
+        "type": "ArrowFunctionExpression",
+      },
+    },
+  ],
+}
+`;
+
+exports[`JSXElement exit visitor when the element is the VocabTransform element should replace its children with the translation hook call 1`] = `
+Array [
+  Object {
+    "expression": Object {
+      "arguments": Array [
+        Object {
+          "type": "StringLiteral",
+          "value": "Click here",
+        },
+        Object {
+          "properties": Array [
+            Object {
+              "computed": false,
+              "decorators": null,
+              "key": Object {
+                "name": "button",
+                "type": "Identifier",
+              },
+              "shorthand": false,
+              "type": "ObjectProperty",
+              "value": Object {
+                "async": false,
+                "body": Object {
+                  "children": Array [
+                    Object {
+                      "expression": Object {
+                        "name": "children",
+                        "type": "Identifier",
+                      },
+                      "type": "JSXExpressionContainer",
+                    },
+                  ],
+                  "closingElement": Object {
+                    "name": Object {
+                      "name": "button",
+                      "type": "JSXIdentifier",
+                    },
+                    "type": "JSXClosingElement",
+                  },
+                  "openingElement": Object {
+                    "attributes": Array [],
+                    "name": Object {
+                      "name": "button",
+                      "type": "JSXIdentifier",
+                    },
+                    "selfClosing": false,
+                    "type": "JSXOpeningElement",
+                  },
+                  "selfClosing": null,
+                  "type": "JSXElement",
+                },
+                "params": Array [
+                  Object {
+                    "name": "children",
+                    "type": "Identifier",
+                  },
+                ],
+                "type": "ArrowFunctionExpression",
+              },
+            },
+          ],
+          "type": "ObjectExpression",
+        },
+      ],
+      "callee": Object {
+        "name": "t",
+        "type": "Identifier",
+      },
+      "type": "CallExpression",
+    },
+    "type": "JSXExpressionContainer",
+  },
+]
+`;
