@@ -1,15 +1,28 @@
 import * as t from "@babel/types";
 import { capitalise, transformWrapper } from "../string";
 
-export const getJsxElementName = (jsxElement: t.JSXElement): string => {
+type JsxElementNameType = t.JSXElement["openingElement"]["name"]["type"];
+interface ElementName {
+  name: string;
+  type: JsxElementNameType;
+}
+
+export const getJsxElementName = (jsxElement: t.JSXElement): ElementName => {
   const openingElementName = jsxElement.openingElement.name;
   if (t.isJSXIdentifier(openingElementName)) {
-    return openingElementName.name;
+    return { name: openingElementName.name, type: openingElementName.type };
   }
 
-  // TODO: Handle the other possible opening element name types
+  if (t.isJSXMemberExpression(openingElementName)) {
+    const flattenedName = flattenJsxMemberExpression(openingElementName);
+    const joinedName = flattenedName.map(({ name }) => name).join(".");
+
+    return { name: joinedName, type: openingElementName.type };
+  }
+
+  // TODO: Handle namespace identifiers
   throw new Error(
-    "Member expression and namespaced identifiers are not supported yet"
+    "Namespaced identifiers as JSX element names are not supported yet"
   );
 };
 
@@ -45,6 +58,27 @@ export const flattenMemberExpression = ({
   return [...flattenedObject, property];
 };
 
+export const flattenJsxMemberExpression = ({
+  object,
+  property,
+}: t.JSXMemberExpression): t.JSXIdentifier[] => {
+  if (!t.isJSXIdentifier(object) && !t.isJSXMemberExpression(object)) {
+    throw new Error(
+      "Member expression object is not an identifier or a member expression"
+    );
+  }
+
+  const flattenedObject = t.isJSXMemberExpression(object)
+    ? flattenJsxMemberExpression(object)
+    : [object];
+
+  if (!t.isJSXIdentifier(property)) {
+    throw new Error("Member expression property is not an identifier");
+  }
+
+  return [...flattenedObject, property];
+};
+
 export const memberExpressionToObjectProperty = (
   memberExpression: t.MemberExpression
 ): { objectProperty: t.ObjectProperty; keyString: string } => {
@@ -69,8 +103,10 @@ export const createElementRendererObjectProperty = (
   // Assumption: This JSXElement has no nested children, so we just replace
   // all its children with a single children identifier
   jsxElement.children = [t.jsxExpressionContainer(childrenIdentifier)];
+  const { name, type } = getJsxElementName(jsxElement);
 
-  const propertyKey = t.identifier(getJsxElementName(jsxElement));
+  const propertyKey =
+    type === "JSXIdentifier" ? t.identifier(name) : t.stringLiteral(name);
 
   const arrowFunctionBody = jsxElement;
   const propertyValue = t.arrowFunctionExpression(

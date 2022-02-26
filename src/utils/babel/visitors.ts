@@ -20,7 +20,7 @@ export const jsxElementEnterVisitor = (
   state: TransformState
 ) => {
   if (!isJsxVocabTransformElement(jsxElement)) {
-    const name = getJsxElementName(jsxElement);
+    const { name } = getJsxElementName(jsxElement);
     state.elementNameStack.push(name);
     const openingElement = `<${name}>`;
 
@@ -49,12 +49,11 @@ export const jsxElementExitVisitor = (
     // Since we're exiting the node the element name is on the top of the stack
     const name = state.elementNameStack.pop();
     const closingElement = `</${name}>`;
-
     state.message = `${state.message}${closingElement}`;
 
-    const objectProperty = createElementRendererObjectProperty(jsxElement);
     // Push a property with the element name as the key and an
     // arrow function that renders children inside the element
+    const objectProperty = createElementRendererObjectProperty(jsxElement);
     state.translationHookProperties.push(objectProperty);
   }
 };

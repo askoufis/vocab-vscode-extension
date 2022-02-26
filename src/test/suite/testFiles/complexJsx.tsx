@@ -1,6 +1,7 @@
 import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
 import React from "react";
+import { Foo } from "./Foo";
 
 const MyComponent = () => {
   const { t } = useTranslations(translations);
@@ -8,9 +9,9 @@ const MyComponent = () => {
     <div>
       I am a paragraph with some{" "}
       <div className="bar">
-        <span>
+        <Foo.Bar>
           <b>bold</b>
-        </span>{" "}
+        </Foo.Bar>{" "}
         and <i>italic</i>
       </div>{" "}
       text and a <a href="/foo">link</a>

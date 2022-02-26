@@ -265,19 +265,20 @@ const MyComponent = () => {
       test("should extract the translation string, insert the translation correctly, add the tag as a parameter and add it to the translations file", async () => {
         const testFileName = "complexJsx.tsx";
 
-        const start = new vscode.Position(8, 6);
-        const end = new vscode.Position(15, 40);
+        const start = new vscode.Position(9, 6);
+        const end = new vscode.Position(16, 40);
         const selection = new vscode.Selection(start, end);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
 import React from "react";
+import { Foo } from "./Foo";
 
 const MyComponent = () => {
   const { t } = useTranslations(translations);
   return (
     <div>
-      {t("I am a paragraph with some bold and italic text and a link", { b: (children) => <b>{children}</b>, span: (children) => <span>{children}</span>, i: (children) => <i>{children}</i>, div: (children) => <div className="bar">{children}</div>, a: (children) => <a href="/foo">{children}</a> })}
+      {t("I am a paragraph with some bold and italic text and a link", { b: (children) => <b>{children}</b>, "Foo.Bar": (children) => <Foo.Bar>{children}</Foo.Bar>, i: (children) => <i>{children}</i>, div: (children) => <div className="bar">{children}</div>, a: (children) => <a href="/foo">{children}</a> })}
     </div>
   );
 };
@@ -285,7 +286,7 @@ const MyComponent = () => {
 
         const expectedTranslationsFileContents = `{
   "I am a paragraph with some bold and italic text and a link": {
-    "message": "I am a paragraph with some <div><span><b>bold</b></span> and <i>italic</i></div> text and a <a>link</a>"
+    "message": "I am a paragraph with some <div><Foo.Bar><b>bold</b></Foo.Bar> and <i>italic</i></div> text and a <a>link</a>"
   }
 }`;
         await runExtractionTest({

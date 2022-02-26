@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { TransformResult } from "../utils/jsxBabelTransform";
+import { TransformResult } from "../utils/babel/transform";
 
 const HIGHLIGHT_TYPES = [
   // E.g. const foo = "foo";

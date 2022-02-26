@@ -11,13 +11,30 @@ import {
 
 describe("babel utils", () => {
   describe("getJsxElementName", () => {
-    it("should get the name of a jsx element", () => {
+    it("should get the name of a jsx element with a jsx identifier name", () => {
       const name = "Test";
       const jsxElement = createJsxElement(name);
 
       const result = getJsxElementName(jsxElement);
 
-      expect(result).toBe(name);
+      expect(result).toEqual({ name, type: "JSXIdentifier" });
+    });
+
+    it("should get the name of a jsx element with a memberExpressionName", () => {
+      const elementNameMemberExpression = t.jsxMemberExpression(
+        t.jsxIdentifier("Foo"),
+        t.jsxIdentifier("Bar")
+      );
+      const openingElement = t.jsxOpeningElement(
+        elementNameMemberExpression,
+        []
+      );
+      const closingElement = t.jsxClosingElement(elementNameMemberExpression);
+      const jsxElement = t.jSXElement(openingElement, closingElement, []);
+
+      const result = getJsxElementName(jsxElement);
+
+      expect(result).toEqual({ name: "Foo.Bar", type: "JSXMemberExpression" });
     });
   });
 

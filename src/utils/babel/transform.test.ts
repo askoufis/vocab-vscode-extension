@@ -68,6 +68,21 @@ describe("transformHighlightContainingJsx", () => {
     });
   });
 
+  describe("When a jsx element name is a member expression", () => {
+    it("should return a transform result with the correct key, message and transformed code", () => {
+      const input = 'Bonjour de <foo.a href="/foo">Vocab</foo.a>!!!';
+
+      const result = transformHighlightContainingJsx(input);
+      const expected = {
+        key: "Bonjour de Vocab!!!",
+        message: "Bonjour de <foo.a>Vocab</foo.a>!!!",
+        code: '{t("Bonjour de Vocab!!!", { "foo.a": (children) => <foo.a href="/foo">{children}</foo.a> })}',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
   describe("When there is are multiple elements surrounded by strings", () => {
     it("should return a transform result with the correct key, message and transformed code", () => {
       const input =

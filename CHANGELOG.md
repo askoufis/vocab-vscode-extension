@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2022-02-26
+
+### Added
+
+- `vocabHelper.extractTranslationString` can now handle element names that are member expressions like `Foo.Bar`
+
+  E.g.
+
+  ```tsx
+  const foo =
+    // prettier-ignore
+    <div>Click <Foo.Bar>here</Foo.Bar></div>;
+  //     _____________________________
+  //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Highlighted
+  ```
+
+  becomes
+
+  ```tsx
+  const foo =
+    // prettier-ignore
+    <div>{t("Click here", { "Foo.Bar": (children) => <Foo.Bar>{children}</Foo.Bar> })}</div>;
+
+  // Translation messaged: "Click <Foo.Bar>here</Foo.Bar>"
+  ```
+
+### Internal
+
+- Renamed files and re-organised utils folder structure
+- Refactored some visitors in order to make them easier to test
+
 ## [0.5.0] - 2022-02-22
 
 ### Added
