@@ -11,6 +11,7 @@ import {
 const initialTransformState: TransformState = {
   key: "Existing text ",
   message: "Existing text ",
+  elementNameOccurrences: {},
   translationHookProperties: [],
   elementNameStack: [],
 };
@@ -27,6 +28,7 @@ describe("JSXText visitor", () => {
     expect(state).toEqual({
       key: "Existing text test",
       message: "Existing text test",
+      elementNameOccurrences: {},
       translationHookProperties: [],
       elementNameStack: [],
     });
@@ -60,8 +62,35 @@ describe("JSXElement", () => {
         expect(state).toEqual({
           key: "Existing text ",
           message: "Existing text <button>",
+          elementNameOccurrences: { button: 1 },
           translationHookProperties: [],
-          elementNameStack: ["button"],
+          elementNameStack: [{ name: "button", suffix: "" }],
+        });
+      });
+    });
+
+    describe("when an element is visited that has the same name as a previously visited element", () => {
+      it("push the element name onto the element name stack and append and an element tag to the message", () => {
+        const jsxElement = createJsxElement("button");
+        const state = {
+          key: "Existing text <button>foo</button>",
+          message: "Existing text <button>foo</button> ",
+          elementNameOccurrences: { button: 1 },
+          translationHookProperties: [],
+          elementNameStack: [{ name: "button", suffix: "" }],
+        };
+
+        jsxElementEnterVisitor({ node: jsxElement }, state);
+
+        expect(state).toEqual({
+          key: "Existing text <button>foo</button>",
+          message: "Existing text <button>foo</button> <button1>",
+          elementNameOccurrences: { button: 2 },
+          translationHookProperties: [],
+          elementNameStack: [
+            { name: "button", suffix: "" },
+            { name: "button", suffix: "1" },
+          ],
         });
       });
     });
@@ -74,6 +103,7 @@ describe("JSXElement", () => {
         const state: TransformState = {
           key: "Click here",
           message: "Click <button>here</button",
+          elementNameOccurrences: {},
           translationHookProperties: [
             createElementRendererObjectProperty(createJsxElement("button")),
           ],
@@ -95,8 +125,9 @@ describe("JSXElement", () => {
         const state: TransformState = {
           key: "Existing text click me",
           message: "Existing text <button>click me",
+          elementNameOccurrences: {},
           translationHookProperties: [],
-          elementNameStack: [elementName],
+          elementNameStack: [{ name: elementName, suffix: "" }],
         };
 
         jsxElementExitVisitor({ node: jsxElement }, state);

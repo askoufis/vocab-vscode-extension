@@ -98,15 +98,19 @@ export const memberExpressionToObjectProperty = (
 const childrenIdentifier = t.identifier("children");
 
 export const createElementRendererObjectProperty = (
-  jsxElement: t.JSXElement
+  jsxElement: t.JSXElement,
+  elementNameSuffix: string = ""
 ): t.ObjectProperty => {
   // Assumption: This JSXElement has no nested children, so we just replace
   // all its children with a single children identifier
   jsxElement.children = [t.jsxExpressionContainer(childrenIdentifier)];
   const { name, type } = getJsxElementName(jsxElement);
+  const nameWithSuffix = `${name}${elementNameSuffix}`;
 
   const propertyKey =
-    type === "JSXIdentifier" ? t.identifier(name) : t.stringLiteral(name);
+    type === "JSXIdentifier"
+      ? t.identifier(nameWithSuffix)
+      : t.stringLiteral(nameWithSuffix);
 
   const arrowFunctionBody = jsxElement;
   const propertyValue = t.arrowFunctionExpression(

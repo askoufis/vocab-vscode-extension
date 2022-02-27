@@ -21,8 +21,14 @@ export const jsxElementEnterVisitor = (
 ) => {
   if (!isJsxVocabTransformElement(jsxElement)) {
     const { name } = getJsxElementName(jsxElement);
-    state.elementNameStack.push(name);
-    const openingElement = `<${name}>`;
+    const elementNameCount = state.elementNameOccurrences[name];
+    state.elementNameOccurrences[name] = elementNameCount
+      ? elementNameCount + 1
+      : 1;
+    const elementNameSuffix = elementNameCount ? `${elementNameCount}` : "";
+    const suffixedElementName = `${name}${elementNameSuffix}`;
+    state.elementNameStack.push({ name, suffix: elementNameSuffix });
+    const openingElement = `<${suffixedElementName}>`;
 
     state.message = `${state.message}${openingElement}`;
   }
@@ -47,13 +53,22 @@ export const jsxElementExitVisitor = (
   } else {
     // Update message
     // Since we're exiting the node the element name is on the top of the stack
-    const name = state.elementNameStack.pop();
-    const closingElement = `</${name}>`;
+    const elementName = state.elementNameStack.pop();
+    if (!elementName) {
+      throw new Error("Element name stack was empty");
+    }
+
+    const { name, suffix: elementNameSuffix } = elementName;
+    const suffixedElementName = `${name}${elementNameSuffix}`;
+    const closingElement = `</${suffixedElementName}>`;
     state.message = `${state.message}${closingElement}`;
 
     // Push a property with the element name as the key and an
     // arrow function that renders children inside the element
-    const objectProperty = createElementRendererObjectProperty(jsxElement);
+    const objectProperty = createElementRendererObjectProperty(
+      jsxElement,
+      elementNameSuffix
+    );
     state.translationHookProperties.push(objectProperty);
   }
 };

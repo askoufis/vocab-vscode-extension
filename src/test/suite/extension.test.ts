@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import {
   createUnquotedAndQuotedSelections,
+  fromHighlightPositions,
   runExtractionTest,
-  setMaxTranslationKeyLength,
 } from "./utils";
 
 suite("Vocab Helper Extension Suite", () => {
@@ -15,9 +15,7 @@ suite("Vocab Helper Extension Suite", () => {
         test("should insert the required imports, extract the translation string and add it to the translations file", async () => {
           const testFileName = "nonTranslatedFile.tsx";
 
-          const start = new vscode.Position(3, 14);
-          const end = new vscode.Position(3, 18);
-          const selection = new vscode.Selection(start, end);
+          const selection = fromHighlightPositions([3, 14], [3, 18]);
 
           const expectedFileContents = `import { useTranslations } from '@vocab/react';
 import translations from './.vocab';
@@ -48,9 +46,7 @@ const { t } = useTranslations(translations);
       test("should extract the translation string, surround the hook call with curly brackets and add it to the translations file", async () => {
         const testFileName = "singleLineJsxString.tsx";
 
-        const start = new vscode.Position(8, 6);
-        const end = new vscode.Position(8, 78);
-        const selection = new vscode.Selection(start, end);
+        const selection = fromHighlightPositions([8, 6], [8, 78]);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
@@ -116,10 +112,7 @@ const MyComponent = () => {
     suite("Component containing a JSX string literal with arguments", () => {
       test("should extract the translation string, surround the hook call with curly brackets, add the arguments as parameters and add it to the translations file", async () => {
         const testFileName = "jsxWithArguments.tsx";
-
-        const start = new vscode.Position(10, 6);
-        const end = new vscode.Position(11, 18);
-        const selection = new vscode.Selection(start, end);
+        const selection = fromHighlightPositions([10, 6], [11, 18]);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
@@ -155,10 +148,7 @@ const MyComponent = () => {
       test("should extract the translation string from the multiline JSX string literal, surround the hook call with curly brackets and add it to the translations file", async () => {
         const testFileName = "multiLineJsxString.tsx";
 
-        // This is a multi-line selection
-        const start = new vscode.Position(8, 6);
-        const end = new vscode.Position(9, 78);
-        const selection = new vscode.Selection(start, end);
+        const selection = fromHighlightPositions([8, 6], [9, 78]);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
@@ -226,12 +216,7 @@ const MyComponent = () => {
       "Component containing string literal with max key length set to 20",
       () => {
         test("should extract and truncate the translation string", async () => {
-          const maxTranslationKeyLength = 20;
-          await setMaxTranslationKeyLength(maxTranslationKeyLength);
-
-          const start = new vscode.Position(6, 14);
-          const end = new vscode.Position(6, 65);
-          const selection = new vscode.Selection(start, end);
+          const selection = fromHighlightPositions([6, 14], [6, 65]);
 
           const testFileName = "truncateString.tsx";
 
@@ -251,12 +236,15 @@ const MyComponent = () => {
   }
 }`;
 
-          await runExtractionTest({
-            testFileName,
-            expectedFileContents,
-            expectedTranslationsFileContents,
-            selection,
-          });
+          await runExtractionTest(
+            {
+              testFileName,
+              expectedFileContents,
+              expectedTranslationsFileContents,
+              selection,
+            },
+            { maxTranslationKeyLength: 20 }
+          );
         });
       }
     );
@@ -265,9 +253,7 @@ const MyComponent = () => {
       test("should extract the translation string, insert the translation correctly, add the tag as a parameter and add it to the translations file", async () => {
         const testFileName = "complexJsx.tsx";
 
-        const start = new vscode.Position(9, 6);
-        const end = new vscode.Position(16, 40);
-        const selection = new vscode.Selection(start, end);
+        const selection = fromHighlightPositions([9, 6], [16, 40]);
 
         const expectedFileContents = `import { useTranslations } from "@vocab/react";
 import translations from "./.vocab";
@@ -287,6 +273,40 @@ const MyComponent = () => {
         const expectedTranslationsFileContents = `{
   "I am a paragraph with some bold and italic text and a link": {
     "message": "I am a paragraph with some <div><Foo.Bar><b>bold</b></Foo.Bar> and <i>italic</i></div> text and a <a>link</a>"
+  }
+}`;
+        await runExtractionTest({
+          testFileName,
+          expectedFileContents,
+          expectedTranslationsFileContents,
+          selection,
+        });
+      });
+    });
+
+    suite("Component containing the same element twice", () => {
+      test("should correctly name the two element parameters", async () => {
+        const testFileName = "sameElement.tsx";
+
+        const selection = fromHighlightPositions([8, 6], [8, 67]);
+
+        const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  return (
+    <div>
+      {t("This text has two links", { a: (children) => <a href="/foo">{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}
+    </div>
+  );
+};
+`;
+
+        const expectedTranslationsFileContents = `{
+  "This text has two links": {
+    "message": "This text <a>has</a> two <a1>links</a1>"
   }
 }`;
         await runExtractionTest({

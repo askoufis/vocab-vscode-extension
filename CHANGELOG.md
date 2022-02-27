@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2022-02-27
+
+### Changed
+
+- `vocabHelper.extractTranslationString` will now add a suffix to element names that occur more than once
+  so as not to create multiple properties with the same key
+
+  E.g.
+
+  ```tsx
+  const foo =
+    // prettier-ignore
+    <div>This text <a href="/foo">has</a> two <a href="/bar">links</a></div>;
+  //     _____________________________________________________________
+  //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Highlighted
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = (
+    <div>
+      {t("This text has two links", {
+        a: (children) => <a href="/foo">{children}</a>,
+        // Previously this would've also had a key of "a" which is invalid in strict mode
+        a1: (children) => <a href="/bar">{children}</a>,
+      })}
+    </div>
+  );
+
+  // Translation message: "This text <a>has</a> two <a1>links</a1>"
+  ```
+
 ## [0.6.0] - 2022-02-26
 
 ### Added
@@ -28,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     // prettier-ignore
     <div>{t("Click here", { "Foo.Bar": (children) => <Foo.Bar>{children}</Foo.Bar> })}</div>;
 
-  // Translation messaged: "Click <Foo.Bar>here</Foo.Bar>"
+  // Translation message: "Click <Foo.Bar>here</Foo.Bar>"
   ```
 
 ### Internal
@@ -73,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     <div>{t("I have a fooBar member expression", { fooBar: foo.bar })}</div>
   );
 
-  // Translation messaged: "I have a {fooBar} member expression"
+  // Translation message: "I have a {fooBar} member expression"
   ```
 
 - `vocabHelper.extractTranslationString` now handles javascript space expressions (`{" "}`) and multi-line nested elements better

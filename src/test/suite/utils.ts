@@ -15,8 +15,20 @@ const vocabFolderPath = `${path.join(
 )}`;
 const vocabFolderUri = vscode.Uri.file(vocabFolderPath);
 
+type PositionTuple = [number, number];
+
+export const fromHighlightPositions = (
+  start: PositionTuple,
+  end: PositionTuple
+): vscode.Selection => {
+  const startPosition = new vscode.Position(...start);
+  const endPosition = new vscode.Position(...end);
+
+  return new vscode.Selection(startPosition, endPosition);
+};
+
 export const setMaxTranslationKeyLength = async (
-  maxTranslationKeyLength: MaxTranslationKeyLength
+  maxTranslationKeyLength: MaxTranslationKeyLength = null
 ) => {
   const configuration = vscode.workspace.getConfiguration();
 
@@ -45,19 +57,16 @@ const runTestSetup = async () => {
   } catch {}
 };
 
-const runTestCleanup = async () => {
-  await setMaxTranslationKeyLength(null);
-};
-
 export const createUnquotedAndQuotedSelections = (
   startLine: number,
   startCharacter: number,
   endLine: number,
   endCharacter: number
 ) => {
-  const start = new vscode.Position(startLine, startCharacter);
-  const end = new vscode.Position(endLine, endCharacter);
-  const selection = new vscode.Selection(start, end);
+  const selection = fromHighlightPositions(
+    [startLine, startCharacter],
+    [endLine, endCharacter]
+  );
 
   const startWithQuotes = new vscode.Position(startLine, startCharacter - 1);
   const endWithQuotes = new vscode.Position(endLine, endCharacter + 1);
@@ -72,19 +81,25 @@ export const createUnquotedAndQuotedSelections = (
 const readFile = async (uri: vscode.Uri) =>
   new TextDecoder().decode(await vscode.workspace.fs.readFile(uri));
 
-export const runExtractionTest = async ({
-  testFileName,
-  expectedFileContents,
-  expectedTranslationsFileContents,
-  selection,
-}: {
-  testFileName: string;
-  expectedFileContents: string;
-  expectedTranslationsFileContents: string;
-  selection: vscode.Selection;
-}) => {
+export const runExtractionTest = async (
+  {
+    testFileName,
+    expectedFileContents,
+    expectedTranslationsFileContents,
+    selection,
+  }: {
+    testFileName: string;
+    expectedFileContents: string;
+    expectedTranslationsFileContents: string;
+    selection: vscode.Selection;
+  },
+  {
+    maxTranslationKeyLength,
+  }: { maxTranslationKeyLength?: MaxTranslationKeyLength } = {}
+) => {
   await runTestSetup();
 
+  await setMaxTranslationKeyLength(maxTranslationKeyLength);
   await setFormatAfterReplace(false);
 
   const testFileUri = vscode.Uri.file(
@@ -110,6 +125,4 @@ export const runExtractionTest = async ({
     translationsFileContents,
     expectedTranslationsFileContents
   );
-
-  await runTestCleanup();
 };

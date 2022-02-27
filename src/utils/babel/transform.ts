@@ -26,11 +26,18 @@ export const transformHighlightContainingJsx = (s: string): TransformResult => {
   return { key, message, code: unwrappedCode };
 };
 
+export interface ElementName {
+  name: string;
+  suffix: string;
+}
+export type ElementNameOccurrences = Record<string, number | undefined>;
+
 export interface TransformState {
   key: string;
   message: string;
+  elementNameOccurrences: ElementNameOccurrences;
   translationHookProperties: t.ObjectProperty[];
-  elementNameStack: string[];
+  elementNameStack: ElementName[];
 }
 
 type TransformStateOutput = Pick<TransformState, "key" | "message">;
@@ -105,6 +112,7 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
       enter: (_path, state) => {
         state.key = "";
         state.message = "";
+        state.elementNameOccurrences = {};
         state.translationHookProperties = [];
         state.elementNameStack = [];
       },
