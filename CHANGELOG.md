@@ -5,9 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2022-03-08
+
+### Fixed
+
+The `@babel/plugin-syntax-jsx` dependency wasn't being included in the bundled extension, causing a runtime error when extracting a translation string containing JSX.
+
+This was occurring because the plugin was being referenced via a string, rather than a direct import. Esbuild looks for direct usages of `require()`, so it can't bundle dependencies that are included via indirect usage of `require()`, which is presumably what babel does. See [this issue](https://github.com/evanw/esbuild/issues/1619) for more details.
+
+The fix was to import the plugin and use it directly, rather than just passing the import path to `babel.transformSync`.
+
 ## [0.6.1] - 2022-02-27
 
-### Changed
+### Fixed
 
 - `vocabHelper.extractTranslationString` will now add a suffix to element names that occur more than once
   so as not to create multiple properties with the same key
@@ -221,7 +231,7 @@ Seems like the previous release didn't actually contain the new feature. Bumping
 
 ## [0.0.7] - 2021-11-28
 
-### Changed
+### Fixed
 
 - `vocabHelper.extractTranslationString` now correctly handles string literal prop values
   E.g.
@@ -235,6 +245,8 @@ Seems like the previous release didn't actually contain the new feature. Bumping
   ```tsx
   const MyComponent = () => <div foo={t("bar")}>Test</div>;
   ```
+
+### Changed
 
 - Translation files now have their JSON automatically formatted. The hacky workaround enabled by the `vocabHelper.formatSaveTranslationOnExtract` setting has been removed, and hence the setting itself has also been removed. I never knew `JSON.stringify` could also format your JSON.
 
@@ -253,7 +265,7 @@ Seems like the previous release didn't actually contain the new feature. Bumping
 
 ## [0.0.5] - 2021-11-26
 
-### Changed
+### Fixed
 
 #### Commands
 
@@ -291,7 +303,7 @@ Seems like the previous release didn't actually contain the new feature. Bumping
 
 ## [0.0.3] - 2021-11-19
 
-### Changed
+### Fixed
 
 #### Commands
 

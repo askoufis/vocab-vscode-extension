@@ -12,6 +12,8 @@ import {
   jsxElementExitVisitor,
   jsxTextVisitor,
 } from "./visitors";
+// @ts-ignore
+import babelPluginSyntaxJsx from "@babel/plugin-syntax-jsx";
 
 export const transformHighlightContainingJsx = (s: string): TransformResult => {
   // The highlighted code is likely not valid JSX by itself, so we
@@ -66,10 +68,7 @@ export const transformJsxToVocabHook = (
   };
 
   const code = transformSync(validJsxCode, {
-    plugins: [
-      "@babel/plugin-syntax-jsx",
-      [vocabTransformPlugin, { onTreeExit }],
-    ],
+    plugins: [babelPluginSyntaxJsx, [vocabTransformPlugin, { onTreeExit }]],
     retainLines: true,
   })?.code;
 
