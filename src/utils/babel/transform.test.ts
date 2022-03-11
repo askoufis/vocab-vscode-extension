@@ -114,4 +114,20 @@ describe("transformHighlightContainingJsx", () => {
       expect(result).toEqual(expected);
     });
   });
+
+  describe("When there is typescript syntax in an element", () => {
+    it("should suffix the duplicate keys in the hook call", () => {
+      const input =
+        'Bonjour de <a href={"/foo" as const}>Vocab</a>!!! <a href="/bar">Bonjour</a> Bonjour!';
+
+      const result = transformHighlightContainingJsx(input);
+      const expected = {
+        key: "Bonjour de Vocab!!! Bonjour Bonjour!",
+        message: "Bonjour de <a>Vocab</a>!!! <a1>Bonjour</a1> Bonjour!",
+        code: '{t("Bonjour de Vocab!!! Bonjour Bonjour!", { a: (children) => <a href={("/foo" as const)}>{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
 });

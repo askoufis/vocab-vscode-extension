@@ -122,7 +122,7 @@ describe("stringUtils", () => {
       expect(result).toBe(singleLineString);
     });
 
-    it("should replace expression space with space characters", () => {
+    it("should replace expression spaces with space characters", () => {
       const stringWithExpressionSpace = 'A string{" "}with{" "}\nsome spaces';
 
       const result = consolidateMultiLineString(stringWithExpressionSpace);
@@ -130,7 +130,15 @@ describe("stringUtils", () => {
       expect(result).toBe("A string with some spaces");
     });
 
-    it("should not nested elements with spaces in-between", () => {
+    it("should not add spaces when joining opening and closing elements with their children on separate lines", () => {
+      const stringWithExpressionSpace = "<a>\nfoo\n</a>";
+
+      const result = consolidateMultiLineString(stringWithExpressionSpace);
+
+      expect(result).toBe("<a>foo</a>");
+    });
+
+    it("should not join nested elements with spaces in-between", () => {
       const stringWithExpressionSpace =
         'A string with{" "}\n<div>\n<b>nested</b>\n</div>{" "}\nelements';
 

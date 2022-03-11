@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2022-03-11
+
+### Added
+
+- `vocabHelper.extractTranslationString` now supports extracting elements that contain typescript syntax
+  E.g.
+
+  ```tsx
+  const foo =
+    <div>Click <a href="/foo" onClick={(event: MouseEvent) => {event.preventDefault()}}>here</a>/div>;
+  //     _______________________________________________________________________________________
+  //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Highlighted
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = (
+    <div>
+      {t("Click here", {
+        a: (children) => (
+          <a
+            href="/foo"
+            onClick={(event: MouseEvent) => {
+              event.preventDefault();
+            }}
+          >
+            {children}
+          </a>
+        ),
+      })}
+    </div>
+  );
+  ```
+
+### Internal
+
+- Turns out we need to both compile (`tsc`) and build (`esbuild`) in order run/test with up-to-date code
+
 ## [0.6.2] - 2022-03-08
 
 ### Fixed

@@ -37,7 +37,9 @@ export const consolidateMultiLineString = (s: string): string => {
     const isFirstElement = currentIndex === 0;
     const isElement = current.startsWith("<");
     const followsSpace = previous.endsWith(" ");
-    const joinWithoutSpace = isElement || followsSpace || isFirstElement;
+    const followsElement = previous.endsWith(">");
+    const joinWithoutSpace =
+      isFirstElement || isElement || followsSpace || followsElement;
 
     if (joinWithoutSpace) {
       return `${previous}${current}`;

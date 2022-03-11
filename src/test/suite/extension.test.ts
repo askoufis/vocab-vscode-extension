@@ -317,5 +317,39 @@ const MyComponent = () => {
         });
       });
     });
+
+    suite("Component containing typescript", () => {
+      test("should correctly extract the translation string", async () => {
+        const testFileName = "typescriptJsx.tsx";
+
+        const selection = fromHighlightPositions([8, 6], [17, 12]);
+
+        const expectedFileContents = `import { useTranslations } from "@vocab/react";
+import translations from "./.vocab";
+import React from "react";
+
+const MyComponent = () => {
+  const { t } = useTranslations(translations);
+  return (
+    <div>
+      {t("This text has a link", { a: (children) => <a href="/foo" onClick={(event: MouseEvent) => {event.preventDefault();}}>{children}</a> })}
+    </div>
+  );
+};
+`;
+
+        const expectedTranslationsFileContents = `{
+  "This text has a link": {
+    "message": "This text <a>has</a> a link"
+  }
+}`;
+        await runExtractionTest({
+          testFileName,
+          expectedFileContents,
+          expectedTranslationsFileContents,
+          selection,
+        });
+      });
+    });
   });
 });
