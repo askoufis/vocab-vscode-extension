@@ -67,7 +67,7 @@
     "test": "node ./out/test/runTest.js",
     "test:unit": "pnpm jest",
     "test:watch": "pnpm jest --watch",
-    "package": "pnpm build:release && vsce package",
+    "package": "pnpm build:release && vsce package --no-dependencies",
     "test-compile": "tsc",
     "build:release": "pnpm compile && pnpm esbuild-base --minify",
     "esbuild": "pnpm esbuild-base --sourcemap",
