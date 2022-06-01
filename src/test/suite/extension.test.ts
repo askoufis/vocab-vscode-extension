@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import dedent from "ts-dedent";
 import {
   createUnquotedAndQuotedSelections,
   fromHighlightPositions,
@@ -17,21 +18,21 @@ suite("Vocab Helper Extension Suite", () => {
 
           const selection = fromHighlightPositions([3, 14], [3, 18]);
 
-          const expectedFileContents = `import { useTranslations } from '@vocab/react';
-import translations from './.vocab';
-import React from "react";
+          const expectedFileContents = dedent`
+            import { useTranslations } from '@vocab/react';
+            import translations from './.vocab';
+            import React from "react";
 
-const MyComponent = () => {
-const { t } = useTranslations(translations);
-  return <div>{t("Test")}</div>;
-};
-`;
-
-          const expectedTranslationsFileContents = `{
-  "Test": {
-    "message": "Test"
-  }
-}`;
+            const MyComponent = () => {
+            const { t } = useTranslations(translations);
+              return <div>{t("Test")}</div>;
+            };`;
+          const expectedTranslationsFileContents = dedent`
+            {
+              "Test": {
+                "message": "Test"
+              }
+            }`;
           await runExtractionTest({
             testFileName,
             expectedFileContents,
@@ -48,25 +49,26 @@ const { t } = useTranslations(translations);
 
         const selection = fromHighlightPositions([8, 6], [8, 78]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return (
-    <div>
-      {t("This is a relatively long line of text. This is some padding at the end.")}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            return (
+              <div>
+                {t("This is a relatively long line of text. This is some padding at the end.")}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "This is a relatively long line of text. This is some padding at the end.": {
-    "message": "This is a relatively long line of text. This is some padding at the end."
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "This is a relatively long line of text. This is some padding at the end.": {
+              "message": "This is a relatively long line of text. This is some padding at the end."
+            }
+          }`;
         await runExtractionTest({
           testFileName,
           expectedFileContents,
@@ -83,22 +85,23 @@ const MyComponent = () => {
         test("should extract the translation string without surrounding it with curly brackets", async () => {
           const testFileName = "stringConstant.tsx";
 
-          const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+          const expectedFileContents = dedent`
+            import { useTranslations } from "@vocab/react";
+            import translations from "./.vocab";
+            import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  const someText = t("This is some text");
-  return <div>{someText}</div>;
-};
-`;
+            const MyComponent = () => {
+              const { t } = useTranslations(translations);
+              const someText = t("This is some text");
+              return <div>{someText}</div>;
+            };`;
 
-          const expectedTranslationsFileContents = `{
-  "This is some text": {
-    "message": "This is some text"
-  }
-}`;
+          const expectedTranslationsFileContents = dedent`
+            {
+              "This is some text": {
+                "message": "This is some text"
+              }
+            }`;
           await runExtractionTest({
             testFileName,
             expectedFileContents,
@@ -114,27 +117,28 @@ const MyComponent = () => {
         const testFileName = "jsxWithArguments.tsx";
         const selection = fromHighlightPositions([10, 6], [11, 18]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  const emails = { unread: 4, spam: 2 };
-  const status = "bad";
-  return (
-    <div>
-      {t("You have emailsUnread unread emails and emailsSpam spam emails. This is status.", { emailsUnread: emails.unread, emailsSpam: emails.spam, status })}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            const emails = { unread: 4, spam: 2 };
+            const status = "bad";
+            return (
+              <div>
+                {t("You have emailsUnread unread emails and emailsSpam spam emails. This is status.", { emailsUnread: emails.unread, emailsSpam: emails.spam, status })}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "You have emailsUnread unread emails and emailsSpam spam emails. This is status.": {
-    "message": "You have {emailsUnread} unread emails and {emailsSpam} spam emails. This is {status}."
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "You have emailsUnread unread emails and emailsSpam spam emails. This is status.": {
+              "message": "You have {emailsUnread} unread emails and {emailsSpam} spam emails. This is {status}."
+            }
+          }`;
         await runExtractionTest({
           testFileName,
           expectedFileContents,
@@ -150,25 +154,26 @@ const MyComponent = () => {
 
         const selection = fromHighlightPositions([8, 6], [9, 78]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return (
-    <div>
-      {t("This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end.")}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            return (
+              <div>
+                {t("This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end.")}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end.": {
-    "message": "This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end."
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end.": {
+              "message": "This is a relatively long line of text. This is some padding at the end. This is a relatively long line of text. This is some padding at the end."
+            }
+          }`;
 
         await runExtractionTest({
           testFileName,
@@ -186,21 +191,22 @@ const MyComponent = () => {
         test("should extract the translation string from a string literal prop, surround the hook call with curly brackets and add it to the translations file", async () => {
           const testFileName = "propValue.tsx";
 
-          const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+          const expectedFileContents = dedent`
+            import { useTranslations } from "@vocab/react";
+            import translations from "./.vocab";
+            import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return <div foo={t("bar")}>{t("Already extracted")}</div>;
-};
-`;
+            const MyComponent = () => {
+              const { t } = useTranslations(translations);
+              return <div foo={t("bar")}>{t("Already extracted")}</div>;
+            };`;
 
-          const expectedTranslationsFileContents = `{
-  "bar": {
-    "message": "bar"
-  }
-}`;
+          const expectedTranslationsFileContents = dedent`
+            {
+              "bar": {
+                "message": "bar"
+              }
+            }`;
 
           await runExtractionTest({
             testFileName,
@@ -220,21 +226,22 @@ const MyComponent = () => {
 
           const testFileName = "truncateString.tsx";
 
-          const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+          const expectedFileContents = dedent`
+            import { useTranslations } from "@vocab/react";
+            import translations from "./.vocab";
+            import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return <div>{t("This is a long line...")}</div>;
-};
-`;
+            const MyComponent = () => {
+              const { t } = useTranslations(translations);
+              return <div>{t("This is a long line...")}</div>;
+            };`;
 
-          const expectedTranslationsFileContents = `{
-  "This is a long line...": {
-    "message": "This is a long line of text that will be truncated."
-  }
-}`;
+          const expectedTranslationsFileContents = dedent`
+            {
+              "This is a long line...": {
+                "message": "This is a long line of text that will be truncated."
+              }
+            }`;
 
           await runExtractionTest(
             {
@@ -255,26 +262,27 @@ const MyComponent = () => {
 
         const selection = fromHighlightPositions([9, 6], [16, 40]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
-import { Foo } from "./Foo";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
+          import { Foo } from "./Foo";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return (
-    <div>
-      {t("I am a paragraph with some bold and italic text and a link", { b: (children) => <b>{children}</b>, "Foo.Bar": (children) => <Foo.Bar>{children}</Foo.Bar>, i: (children) => <i>{children}</i>, div: (children) => <div className="bar">{children}</div>, a: (children) => <a href="/foo">{children}</a> })}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            return (
+              <div>
+                {t("I am a paragraph with some bold and italic text and a link", { b: (children) => <b>{children}</b>, "Foo.Bar": (children) => <Foo.Bar>{children}</Foo.Bar>, i: (children) => <i>{children}</i>, div: (children) => <div className="bar">{children}</div>, a: (children) => <a href="/foo">{children}</a> })}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "I am a paragraph with some bold and italic text and a link": {
-    "message": "I am a paragraph with some <div><Foo.Bar><b>bold</b></Foo.Bar> and <i>italic</i></div> text and a <a>link</a>"
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "I am a paragraph with some bold and italic text and a link": {
+              "message": "I am a paragraph with some <div><Foo.Bar><b>bold</b></Foo.Bar> and <i>italic</i></div> text and a <a>link</a>"
+            }
+          }`;
         await runExtractionTest({
           testFileName,
           expectedFileContents,
@@ -290,25 +298,26 @@ const MyComponent = () => {
 
         const selection = fromHighlightPositions([8, 6], [8, 67]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return (
-    <div>
-      {t("This text has two links", { a: (children) => <a href="/foo">{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            return (
+              <div>
+                {t("This text has two links", { a: (children) => <a href="/foo">{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "This text has two links": {
-    "message": "This text <a>has</a> two <a1>links</a1>"
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "This text has two links": {
+              "message": "This text <a>has</a> two <a1>links</a1>"
+            }
+          }`;
         await runExtractionTest({
           testFileName,
           expectedFileContents,
@@ -324,25 +333,26 @@ const MyComponent = () => {
 
         const selection = fromHighlightPositions([8, 6], [17, 12]);
 
-        const expectedFileContents = `import { useTranslations } from "@vocab/react";
-import translations from "./.vocab";
-import React from "react";
+        const expectedFileContents = dedent`
+          import { useTranslations } from "@vocab/react";
+          import translations from "./.vocab";
+          import React from "react";
 
-const MyComponent = () => {
-  const { t } = useTranslations(translations);
-  return (
-    <div>
-      {t("This text has a link", { a: (children) => <a href="/foo" onClick={(event: MouseEvent) => {event.preventDefault();}}>{children}</a> })}
-    </div>
-  );
-};
-`;
+          const MyComponent = () => {
+            const { t } = useTranslations(translations);
+            return (
+              <div>
+                {t("This text has a link", { a: (children) => <a href="/foo" onClick={(event: MouseEvent) => {event.preventDefault();}}>{children}</a> })}
+              </div>
+            );
+          };`;
 
-        const expectedTranslationsFileContents = `{
-  "This text has a link": {
-    "message": "This text <a>has</a> a link"
-  }
-}`;
+        const expectedTranslationsFileContents = dedent`
+          {
+            "This text has a link": {
+              "message": "This text <a>has</a> a link"
+            }
+          }`;
         await runExtractionTest({
           testFileName,
           expectedFileContents,
