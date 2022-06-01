@@ -69,7 +69,6 @@
     "test:unit": "pnpm jest",
     "test:watch": "pnpm jest --watch",
     "package": "pnpm build:release && vsce package --no-dependencies",
-    "test-compile": "tsc",
     "build:release": "pnpm compile && pnpm esbuild-base --minify",
     "esbuild": "pnpm esbuild-base --sourcemap",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",

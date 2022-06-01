@@ -16,6 +16,7 @@ import {
 import babelPluginSyntaxJsx from "@babel/plugin-syntax-jsx";
 // @ts-ignore
 import babelPluginSyntaxTypescript from "@babel/plugin-syntax-typescript";
+import type { OnTreeExit, PluginState, TransformResult } from "./types";
 
 export const transformHighlightContainingJsx = (s: string): TransformResult => {
   // The highlighted code is likely not valid JSX by itself, so we
@@ -29,36 +30,6 @@ export const transformHighlightContainingJsx = (s: string): TransformResult => {
 
   return { key, message, code: unwrappedCode };
 };
-
-export interface ElementName {
-  name: string;
-  suffix: string;
-}
-export type ElementNameOccurrences = Record<string, number | undefined>;
-
-export interface TransformState {
-  key: string;
-  message: string;
-  elementNameOccurrences: ElementNameOccurrences;
-  translationHookProperties: t.ObjectProperty[];
-  elementNameStack: ElementName[];
-}
-
-type TransformStateOutput = Pick<TransformState, "key" | "message">;
-
-export interface TransformResult extends TransformStateOutput {
-  code: string;
-}
-
-type OnTreeExit = (transformStateOutput: TransformStateOutput) => void;
-
-interface PluginOptions {
-  onTreeExit: OnTreeExit;
-}
-
-interface PluginState extends TransformState {
-  opts: PluginOptions;
-}
 
 export const transformJsxToVocabHook = (
   validJsxCode: string

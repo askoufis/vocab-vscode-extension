@@ -1,8 +1,8 @@
 import {
   transformHighlightContainingJsx,
   transformJsxToVocabHook,
-  TransformResult,
 } from "./transform";
+import { TransformResult } from "./types";
 
 describe("transformJsxToVocabHook", () => {
   it("should transform jsx correctly and return the correct translation key and message", () => {

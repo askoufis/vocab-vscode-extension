@@ -1,5 +1,5 @@
 import * as t from "@babel/types";
-import { TransformState } from "./transform";
+import type { TransformState } from "./types";
 import {
   createElementRendererObjectProperty,
   getJsxElementName,
