@@ -61,15 +61,15 @@
     ]
   },
   "scripts": {
-    "compile": "tsc",
+    "tsc": "tsc",
     "lint": "eslint src --ext ts",
     "watch": "tsc --watch",
-    "pretest": "pnpm compile && pnpm lint",
+    "pretest": "pnpm tsc && pnpm lint",
     "test": "node ./out/test/runTest.js",
     "test:unit": "pnpm jest",
     "test:watch": "pnpm jest --watch",
     "package": "pnpm build:release && vsce package --no-dependencies",
-    "build:release": "pnpm compile && pnpm esbuild-base --minify",
+    "build:release": "pnpm tsc && pnpm esbuild-base --minify",
     "esbuild": "pnpm esbuild-base --sourcemap",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild-watch": "pnpm esbuild-base --sourcemap --watch"
@@ -101,7 +101,7 @@
     "jest-watch-typeahead": "^1.1.0",
     "mocha": "^9.2.0",
     "ts-dedent": "^2.2.0",
-    "typescript": "4.4.4"
+    "typescript": "4.7.2"
   },
   "volta": {
     "node": "16.14.2"
