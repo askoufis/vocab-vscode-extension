@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import type * as vscode from "vscode";
 import * as path from "path";
 
 export const getTranslationsFilePath = (editor: vscode.TextEditor) => {

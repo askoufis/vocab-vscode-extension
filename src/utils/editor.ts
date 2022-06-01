@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { MaxTranslationKeyLength } from "../types/configuration";
-import {
+import type { MaxTranslationKeyLength } from "../types/configuration";
+import type {
   HighlightString,
   HighlightStringWithTransform,
   HighlightType,

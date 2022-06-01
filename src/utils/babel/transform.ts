@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { transformSync, Visitor } from "@babel/core";
+import type { Visitor } from "@babel/core";
+import { transformSync } from "@babel/core";
 import * as t from "@babel/types";
 import { memberExpressionToObjectProperty } from "./typeOperations";
 import {

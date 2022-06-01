@@ -7,7 +7,8 @@
         "assertFunctionNames": ["expect", "runExtractionTest"],
         "additionalTestBlockFunctions": []
       }
-    ]
+    ],
+    "@typescript-eslint/consistent-type-imports": ["error"]
   },
   "ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }

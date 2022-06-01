@@ -7,8 +7,11 @@ import {
   replaceHighlightWithTranslation,
 } from "../../utils/editor";
 import { TextDecoder } from "util";
-import { HighlightString, TranslationsFile } from "../../types/translation";
-import { MaxTranslationKeyLength } from "../../types/configuration";
+import type {
+  HighlightString,
+  TranslationsFile,
+} from "../../types/translation";
+import type { MaxTranslationKeyLength } from "../../types/configuration";
 import { getTranslationsFilePath } from "../../utils/file";
 import { getConfiguration } from "../configuration";
 import { showError } from "../../utils/error";

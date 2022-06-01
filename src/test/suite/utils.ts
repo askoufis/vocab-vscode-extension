@@ -2,7 +2,7 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as path from "path";
 import { TextDecoder } from "util";
-import {
+import type {
   FormatAfterReplace,
   MaxTranslationKeyLength,
 } from "../../types/configuration";
