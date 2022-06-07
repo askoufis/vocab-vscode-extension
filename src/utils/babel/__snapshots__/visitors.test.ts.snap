@@ -47,6 +47,7 @@ Object {
           "selfClosing": null,
           "type": "JSXElement",
         },
+        "expression": null,
         "params": Array [
           Object {
             "name": "children",
@@ -111,6 +112,7 @@ Array [
                   "selfClosing": null,
                   "type": "JSXElement",
                 },
+                "expression": null,
                 "params": Array [
                   Object {
                     "name": "children",

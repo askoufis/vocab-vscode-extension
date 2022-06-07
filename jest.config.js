@@ -1,6 +1,6 @@
 module.exports = {
   transform: {
-    "^.+\\.(t|j)sx?$": ["@swc/jest"],
+    "^.+\\.tsx?$": "esbuild-jest",
   },
   testEnvironment: "node",
   testPathIgnorePatterns: ["src/test", "out/"],
