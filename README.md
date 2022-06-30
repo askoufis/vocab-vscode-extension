@@ -34,16 +34,16 @@ This extension contributes the following commands:
 
 ## Showcase
 
-Extract text
+Extract text<br/>
 ![](./docs/simple.gif)
 
-Extract text with a variable
-![](./docs/single variable.gif.gif)
+Extract text with a variable<br/>
+![](./docs/single variable.gif)
 
-Extract text with JSX
+Extract text with JSX<br/>
 ![](./docs/jsx1.gif)
 
-It even handles deeply nested JSX!
+It even handles deeply nested JSX!<br/>
 ![](./docs/jsx2.gif)
 
 ## Release Notes
