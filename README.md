@@ -1,6 +1,6 @@
 # Vocab Helper
 
-Helper extension for the [Vocab](https://github.com/seek-oss/vocab) i18n framework.
+Helper extension for the [Vocab][vocab] i18n framework.
 
 ## WARNING: This is still a work in progress. Use with caution.
 
@@ -15,9 +15,9 @@ From now on all versions of the addon will be published to the vscode marketplac
 
 ## Features
 
-- Copy a string directly into the nearest `translations.json` file, wrapping the string with the `t` translation hook
+- ✨Automatically extract the highlighted text into the nearest `translations.json` file, wrapping the string with the `t` translation hook✨
 - Automatically create a `translations.json` and/or `.vocab` folder if they don't already exist
-- Automatically import vocab if it's not already imported
+- Automatically import [vocab] if it's not already imported
 - Open the nearest translations file relative to the current component
 
 ## Commands
@@ -32,6 +32,20 @@ This extension contributes the following commands:
 - `vocabHelper.maxTranslationKeyLength`: Truncate translation keys longer than a specified maximum length
 - `vocabHelper.formatAfterReplace` (defaults to `false`): Format the current document after replacing the highlighted translation string
 
+## Showcase
+
+Extract text
+![](./docs/simple.gif)
+
+Extract text with a variable
+![](./docs/single variable.gif.gif)
+
+Extract text with JSX
+![](./docs/jsx1.gif)
+
+It even handles deeply nested JSX!
+![](./docs/jsx2.gif)
+
 ## Release Notes
 
 See [`CHANGELOG.md`](./CHANGELOG.md)
@@ -41,6 +55,8 @@ See [`CHANGELOG.md`](./CHANGELOG.md)
 ### Running the extension locally
 
 1. Clone the repo
-2. Run `yarn` to install dependencies
+2. Run `pnpm` to install dependencies
 3. Run the `Extension Tests` launch configuration to make sure everything is working
 4. Run the `Run Extension` launch config to start a separate VSCode instance that's running the extension code from your local repo
+
+[vocab]: https://github.com/seek-oss/vocab
