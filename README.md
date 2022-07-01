@@ -2,16 +2,20 @@
 
 Helper extension for the [Vocab][vocab] i18n framework.
 
-## WARNING: This is still a work in progress. Use with caution.
+**This extension is still a WIP. It should work as expected, but if you find a bug please [create an issue].**
+
+[create an issue]: https://github.com/askoufis/vocab-vscode-extension/issues/new
 
 ## How to install
 
-To install the extension, visit the [extension page](https://marketplace.visualstudio.com/items?itemName=askoufis.vocabhelper) and click install.
+To install the extension, visit the [extension page] and click install.
 Alternatively, search for `Vocab helper` in the extensions tab of VSCode and install it from there.
 
 If you have previously installed the addon via a `.vsix` file from the releases page, please uninstall the addon
 and re-install the version from the VSCode marketplace. The versions in the releases section of the github page are now out of date.
 From now on all versions of the addon will be published to the vscode marketplace.
+
+[extension page]: https://marketplace.visualstudio.com/items?itemName=askoufis.vocabhelper
 
 ## Features
 
@@ -48,7 +52,9 @@ It even handles deeply nested JSX!<br/>
 
 ## Release Notes
 
-See [`CHANGELOG.md`](./CHANGELOG.md)
+See [the changelog].
+
+[the changelog]: ./CHANGELOG.md
 
 ## Contributing
 
