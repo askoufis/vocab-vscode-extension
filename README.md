@@ -38,7 +38,7 @@ Extract text<br/>
 ![](./docs/simple.gif)
 
 Extract text with a variable<br/>
-![](./docs/single variable.gif)
+![](./docs/single-variable.gif)
 
 Extract text with JSX<br/>
 ![](./docs/jsx1.gif)
