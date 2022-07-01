@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2022-07-01
+
+Pushed a new version so the [extension page on the marketplace](https://marketplace.visualstudio.com/items?itemName=askoufis.vocabhelper)
+would reflect the new docs changes.
+
 ## [0.7.0] - 2022-03-11
 
 ### Added
