@@ -54,7 +54,9 @@ export const setFormatAfterReplace = async (
 const runTestSetup = async () => {
   try {
     await vscode.workspace.fs.delete(vocabFolderUri, { recursive: true });
-  } catch {}
+  } catch {
+    // Don't do anything if files don't exist
+  }
 };
 
 export const createUnquotedAndQuotedSelections = (
@@ -116,8 +118,9 @@ export const runExtractionTest = async (
   await vscode.commands.executeCommand("vocabHelper.extractTranslationString");
   const testFileContents = testFileDocument.getText().trim();
 
-  assert.strictEqual(testFileContents, expectedFileContents);
+  // Close file before assertion in case the assertion fails
   await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+  assert.strictEqual(testFileContents, expectedFileContents);
 
   const translationsFileContents = await readFile(translationsFileUri);
 
