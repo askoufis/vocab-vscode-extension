@@ -218,41 +218,93 @@ suite("Vocab Helper Extension Suite", () => {
       });
     });
 
-    suite("Component containing a prop with a template string value", () => {
-      const selections = createUnquotedAndQuotedSelections(7, 17, 7, 42);
+    suite(
+      "Component containing a prop with a template string that has an identifier",
+      () => {
+        const selections = createUnquotedAndQuotedSelections(9, 27, 9, 46);
 
-      selections.map((selection) => {
-        test("should extract the translation string from the template string value, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
-          const testFileName = "propTemplateString.tsx";
+        selections.map((selection) => {
+          test("should extract the translation string from the template string identifier, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
+            const testFileName = "propTemplateString.tsx";
 
-          const expectedFileContents = dedent`
+            const expectedFileContents = dedent`
             import { useTranslations } from "@vocab/react";
             import translations from "./.vocab";
             import React from "react";
 
             const MyComponent = (props: { name: string }) => {
               const { t } = useTranslations(translations);
+
+              const { name } = props;
+
+              const foo = <div label={t("My name is name!", { name })}>{t("Already extracted")}</div>;
+
+              return (
+                <div label={\`My name is $\{props.name\}!\`}>{t("Already extracted")}</div>
+              );
+            };`;
+
+            const expectedTranslationsFileContents = dedent`
+            {
+              "My name is name!": {
+                "message": "My name is {name}!"
+              }
+            }`;
+
+            await runExtractionTest({
+              testFileName,
+              expectedFileContents,
+              expectedTranslationsFileContents,
+              selection,
+            });
+          });
+        });
+      }
+    );
+
+    suite(
+      "Component containing a prop with a template string that has a member expression",
+      () => {
+        const selections = createUnquotedAndQuotedSelections(12, 17, 12, 42);
+
+        selections.map((selection) => {
+          test("should extract the translation string from the template string member expression, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
+            const testFileName = "propTemplateString.tsx";
+
+            const expectedFileContents = dedent`
+            import { useTranslations } from "@vocab/react";
+            import translations from "./.vocab";
+            import React from "react";
+
+            const MyComponent = (props: { name: string }) => {
+              const { t } = useTranslations(translations);
+
+              const { name } = props;
+
+              const foo = <div label={\`My name is $\{name\}!\`}>{t("Already extracted")}</div>;
+
               return (
                 <div label={t("My name is propsName!", { propsName: props.name })}>{t("Already extracted")}</div>
               );
             };`;
 
-          const expectedTranslationsFileContents = dedent`
+            const expectedTranslationsFileContents = dedent`
             {
               "My name is propsName!": {
                 "message": "My name is {propsName}!"
               }
             }`;
 
-          await runExtractionTest({
-            testFileName,
-            expectedFileContents,
-            expectedTranslationsFileContents,
-            selection,
+            await runExtractionTest({
+              testFileName,
+              expectedFileContents,
+              expectedTranslationsFileContents,
+              selection,
+            });
           });
         });
-      });
-    });
+      }
+    );
 
     suite(
       "Component containing string literal with max key length set to 20",

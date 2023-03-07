@@ -134,7 +134,7 @@ describe("transformHighlightContainingJsx", () => {
 });
 
 describe("transformTemplateLiteralToVocabHook", () => {
-  it("should transform a string literal into the hook call", () => {
+  it("should transform a string literal with a member expression into the hook call", () => {
     const input = "`My name is ${props.name}!`";
 
     const result = transformTemplateLiteralToVocabHook(input);
@@ -142,6 +142,19 @@ describe("transformTemplateLiteralToVocabHook", () => {
       key: "My name is propsName!",
       message: "My name is {propsName}!",
       code: 't("My name is propsName!", { propsName: props.name })',
+    };
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should transform a string literal with an identifier into the hook call", () => {
+    const input = "`My name is ${name}!`";
+
+    const result = transformTemplateLiteralToVocabHook(input);
+    const expected = {
+      key: "My name is name!",
+      message: "My name is {name}!",
+      code: 't("My name is name!", { name })',
     };
 
     expect(result).toEqual(expected);

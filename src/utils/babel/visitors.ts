@@ -36,13 +36,30 @@ export const templateLiteralEnterVisitor = (
     state.key = `${state.key}${text}`;
     state.message = `${state.message}${text}`;
 
+    // tail === true for the last quasi
     if (quasi.tail) {
       break;
     }
 
     const expression = templateLiteral.expressions[index];
 
-    if (t.isMemberExpression(expression)) {
+    if (t.isIdentifier(expression)) {
+      const keyString = expression.name;
+
+      state.key = `${state.key}${keyString}`;
+      state.message = `${state.message}{${keyString}}`;
+
+      const objectProperty = t.objectProperty(
+        expression,
+        expression,
+        // computed
+        false,
+        // shorthand
+        true
+      );
+
+      state.translationHookProperties.push(objectProperty);
+    } else if (t.isMemberExpression(expression)) {
       const { keyString, objectProperty } =
         memberExpressionToObjectProperty(expression);
       state.key = `${state.key}${keyString}`;
@@ -50,7 +67,9 @@ export const templateLiteralEnterVisitor = (
 
       state.translationHookProperties.push(objectProperty);
     } else {
-      throw new Error(`Expected member expression, got ${expression?.type}`);
+      throw new Error(
+        `Expected identifier or member expression, got ${expression?.type}`
+      );
     }
 
     index += 1;
