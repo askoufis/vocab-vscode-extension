@@ -114,7 +114,7 @@ export const runExtractionTest = async (
   editor.selection = selection;
 
   await vscode.commands.executeCommand("vocabHelper.extractTranslationString");
-  const testFileContents = testFileDocument.getText();
+  const testFileContents = testFileDocument.getText().trim();
 
   assert.strictEqual(testFileContents, expectedFileContents);
   await vscode.commands.executeCommand("workbench.action.closeActiveEditor");

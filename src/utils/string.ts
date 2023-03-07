@@ -9,6 +9,9 @@ export const isSingleQuoted = (s: string): boolean =>
 export const isDoubleQuoted = (s: string): boolean =>
   s.startsWith(doubleQuote) && s.endsWith(doubleQuote);
 
+export const isTemplateLiteral = (s: string): boolean =>
+  s.startsWith("`") && s.endsWith("`");
+
 export const isWithinCurlyBrackets = (s: string): boolean =>
   s.startsWith(leftCurlyBracket) && s.endsWith(rightCurlyBracket);
 
