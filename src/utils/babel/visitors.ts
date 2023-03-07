@@ -64,32 +64,6 @@ export const templateLiteralExitVisitor = (
   const hookCallExpression = constructHookCallExpression(state);
 
   path.replaceWith(hookCallExpression);
-  // // Template literals alternate between quasis and expressions
-  // let index = 0;
-  // for (const quasi of templateLiteral.quasis) {
-  //   const text = quasi.value.raw;
-  //   state.key = `${state.key}${text}`;
-  //   state.message = `${state.message}${text}`;
-  //
-  //   if (quasi.tail) {
-  //     break;
-  //   }
-  //
-  //   const expression = templateLiteral.expressions[index];
-  //
-  //   if (t.isMemberExpression(expression)) {
-  //     const { keyString, objectProperty } =
-  //       memberExpressionToObjectProperty(expression);
-  //     state.key = `${state.key}${keyString}`;
-  //     state.message = `${state.message}{${keyString}}`;
-  //
-  //     state.translationHookProperties.push(objectProperty);
-  //   } else {
-  //     throw new Error(`Expected member expression, got ${expression?.type}`);
-  //   }
-  //
-  //   index += 1;
-  // }
 };
 
 export const jsxElementEnterVisitor = (
