@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2023-03-07
+
+### Fixed
+
+- When extracting template literals with `vocabHelper.extractTranslationString`, previously only
+  member expressions (`foo.bar`) were being extracted. Plain identifiers (`foo`) will now also be
+  extracted.
+  E.g.
+
+  ```tsx
+  const foo = <div foo={`My name is ${name}`}>Foo</div>;
+  //                    ____________________
+  //                    ^^^^^^^^^^^^^^^^^^^^ Highlighted
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = <div foo={t("My name is name", { name })}>Foo</div>;
+  ```
+
 ## [0.8.0] - 2023-03-07
 
 ### Added
