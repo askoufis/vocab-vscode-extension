@@ -154,7 +154,7 @@ const analyseSelection = (
   );
   const expandedSelectionText = getSelectionText(document, expandedSelection);
 
-  if (isTemplateLiteral(originalSelectionText)) {
+  if (isTemplateLiteral(expandedSelectionText)) {
     return { selection: expandedSelection, type: "propValueTemplateLiteral" };
   }
 
@@ -227,7 +227,9 @@ export const getHighlightString = (
     selection
   );
 
-  let value = consolidateMultiLineString(getSelectionText(document, selection));
+  let value = consolidateMultiLineString(
+    getSelectionText(document, analysisSelection)
+  );
 
   if (type === "complexJsx") {
     const transformResult = transformHighlightContainingJsx(value);
