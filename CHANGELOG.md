@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2023-03-07
+
+### Added
+
+- `vocabHelper.extractTranslationString` now supports extracting template literals
+  E.g.
+
+  ```tsx
+  const foo = <div foo={`My name is ${props.name}`}>Foo</div>;
+  //                    __________________________
+  //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^ Highlighted
+  ```
+
+  becomes
+
+  ```tsx
+  const foo = (
+    <div foo={t("My name is propsName", { propsName: props.name })}>Foo</div>
+  );
+  ```
+
 ## [0.7.1] - 2022-07-01
 
 Pushed a new version so the [extension page on the marketplace](https://marketplace.visualstudio.com/items?itemName=askoufis.vocabhelper)
