@@ -37,6 +37,34 @@ describe("JSXText visitor", () => {
 
 describe("TemplateLiteral", () => {
   describe("enter visitor", () => {
+    it("should append the text and any identifiers to both the key and the message", () => {
+      const templateLiteral = t.templateLiteral(
+        [
+          t.templateElement({ raw: "My name is " }),
+          t.templateElement({ raw: "!" }, true),
+        ],
+        [t.identifier("name")]
+      );
+      const state = createInitialState();
+
+      templateLiteralEnterVisitor({ node: templateLiteral }, state);
+
+      expect(state).toEqual({
+        key: "Existing text My name is name!",
+        message: "Existing text My name is {name}!",
+        elementNameOccurrences: {},
+        translationHookProperties: [
+          t.objectProperty(
+            t.identifier("name"),
+            t.identifier("name"),
+            false,
+            true
+          ),
+        ],
+        elementNameStack: [],
+      });
+    });
+
     it("should append the text and any member expressions to both the key and the message", () => {
       const templateLiteral = t.templateLiteral(
         [

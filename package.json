@@ -2,7 +2,7 @@
   "name": "vocabhelper",
   "displayName": "Vocab Helper",
   "description": "Helper extension for the Vocab i18n framework",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "publisher": "askoufis",
   "private": true,
   "repository": {
