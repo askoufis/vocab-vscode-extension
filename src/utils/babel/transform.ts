@@ -12,10 +12,12 @@ import {
   jsxElementEnterVisitor,
   jsxElementExitVisitor,
   jsxTextVisitor,
+  templateLiteralEnterVisitor,
+  templateLiteralExitVisitor,
 } from "./visitors";
-// @ts-ignore
+// @ts-expect-error
 import babelPluginSyntaxJsx from "@babel/plugin-syntax-jsx";
-// @ts-ignore
+// @ts-expect-error
 import babelPluginSyntaxTypescript from "@babel/plugin-syntax-typescript";
 import type { OnTreeExit, PluginState, TransformResult } from "./types";
 
@@ -51,6 +53,29 @@ export const transformJsxToVocabHook = (
   })?.code;
 
   return { ...transformResult, code: code || "" };
+};
+
+export const transformTemplateLiteralToVocabHook = (
+  validJsxCode: string
+): TransformResult => {
+  let transformResult: TransformResult = { key: "", message: "", code: "" };
+
+  const onTreeExit: OnTreeExit = (result) => {
+    transformResult = { ...transformResult, ...result };
+  };
+
+  const code = transformSync(validJsxCode, {
+    plugins: [
+      babelPluginSyntaxJsx,
+      [babelPluginSyntaxTypescript, { isTSX: true }],
+      [templateLiteralTransformPlugin, { onTreeExit }],
+    ],
+    retainLines: true,
+  })?.code;
+
+  const trimmedCode = trimTrailingSemicolon(code || "");
+
+  return { ...transformResult, code: trimmedCode };
 };
 
 const jsxExpressionContainerVisitor: Visitor<PluginState> = {
@@ -109,6 +134,32 @@ const vocabTransformPlugin = (): { visitor: Visitor<PluginState> } => ({
       if (t.isJSXElement(path.parent)) {
         path.traverse(jsxExpressionContainerVisitor, state);
       }
+    },
+  },
+});
+
+const templateLiteralTransformPlugin = (): {
+  visitor: Visitor<PluginState>;
+} => ({
+  visitor: {
+    Program: {
+      enter: (_path, state) => {
+        state.key = "";
+        state.message = "";
+        state.elementNameOccurrences = {};
+        state.translationHookProperties = [];
+        state.elementNameStack = [];
+      },
+      exit: (_path, state) => {
+        state.opts.onTreeExit({
+          key: state.key,
+          message: state.message,
+        });
+      },
+    },
+    TemplateLiteral: {
+      enter: templateLiteralEnterVisitor,
+      exit: templateLiteralExitVisitor,
     },
   },
 });

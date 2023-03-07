@@ -218,6 +218,42 @@ suite("Vocab Helper Extension Suite", () => {
       });
     });
 
+    suite("Component containing a prop with a template string value", () => {
+      const selections = createUnquotedAndQuotedSelections(7, 17, 7, 42);
+
+      selections.map((selection) => {
+        test("should extract the translation string from the template string value, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
+          const testFileName = "propTemplateString.tsx";
+
+          const expectedFileContents = dedent`
+            import { useTranslations } from "@vocab/react";
+            import translations from "./.vocab";
+            import React from "react";
+
+            const MyComponent = (props: { name: string }) => {
+              const { t } = useTranslations(translations);
+              return (
+                <div label={t("My name is propsName!", { propsName: props.name })}>{t("Already extracted")}</div>
+              );
+            };`;
+
+          const expectedTranslationsFileContents = dedent`
+            {
+              "My name is propsName!": {
+                "message": "My name is {propsName}!"
+              }
+            }`;
+
+          await runExtractionTest({
+            testFileName,
+            expectedFileContents,
+            expectedTranslationsFileContents,
+            selection,
+          });
+        });
+      });
+    });
+
     suite(
       "Component containing string literal with max key length set to 20",
       () => {

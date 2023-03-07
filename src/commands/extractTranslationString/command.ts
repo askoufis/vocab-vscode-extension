@@ -11,6 +11,7 @@ import type {
   HighlightString,
   TranslationsFile,
 } from "../../types/translation";
+import { isHighlightStringWithTransform } from "../../types/translation";
 import type { MaxTranslationKeyLength } from "../../types/configuration";
 import { getTranslationsFilePath } from "../../utils/file";
 import { getConfiguration } from "../configuration";
@@ -19,7 +20,7 @@ import { showError } from "../../utils/error";
 const getTranslationStringKeyFromHighlightString = (
   highlightString: HighlightString
 ): string => {
-  if (highlightString.type === "complexJsx") {
+  if (isHighlightStringWithTransform(highlightString)) {
     return highlightString.transformResult.key;
   }
 
@@ -29,7 +30,7 @@ const getTranslationStringKeyFromHighlightString = (
 const getTranslationMessageFromHighlightString = (
   highlightString: HighlightString
 ): string => {
-  if (highlightString.type === "complexJsx") {
+  if (isHighlightStringWithTransform(highlightString)) {
     return highlightString.transformResult.message;
   }
 

@@ -11,6 +11,7 @@ import {
   wrapWithTransformWrapper,
   trimTrailingSemicolon,
   containsJavascriptExpression,
+  isTemplateLiteral,
 } from "./string";
 
 // Import this global so it.each works, I think mocha is overriding it
@@ -51,54 +52,66 @@ describe("stringUtils", () => {
 
       expect(result).toBe(false);
     });
+  });
 
-    describe("stripFirstLast", () => {
-      it.each`
-        testString   | expected   | scenario
-        ${"Test me"} | ${"est m"} | ${"string length greater than 2"}
-        ${"ab"}      | ${""}      | ${"string length equal to 2"}
-        ${"a"}       | ${"a"}     | ${"string length equal to 1"}
-        ${""}        | ${""}      | ${"string length equal to 0"}
-      `(
-        "$scenario",
-        ({
-          testString,
-          expected,
-        }: {
-          testString: string;
-          expected: string;
-        }) => {
-          const result = stripFirstLast(testString);
+  describe("isTemplateLiteral", () => {
+    it("should return true when given a template literal", () => {
+      const testString = "`template literal ${foo.bar}`";
 
-          expect(result).toBe(expected);
-        }
-      );
+      const result = isTemplateLiteral(testString);
+
+      expect(result).toBe(true);
     });
 
-    describe("stripQuotes", () => {
-      it("should strip surrounding single quotes if the string contains them", () => {
-        const testString = "'single quoted'";
+    it("should return false when given a non-template literal", () => {
+      const testString = '"something else"';
 
-        const result = stripQuotes(testString);
+      const result = isTemplateLiteral(testString);
 
-        expect(result).toBe("single quoted");
-      });
+      expect(result).toBe(false);
+    });
+  });
 
-      it("should strip surrounding double quotes if the string contains them", () => {
-        const testString = '"double quoted"';
+  describe("stripFirstLast", () => {
+    it.each`
+      testString   | expected   | scenario
+      ${"Test me"} | ${"est m"} | ${"string length greater than 2"}
+      ${"ab"}      | ${""}      | ${"string length equal to 2"}
+      ${"a"}       | ${"a"}     | ${"string length equal to 1"}
+      ${""}        | ${""}      | ${"string length equal to 0"}
+    `(
+      "$scenario",
+      ({ testString, expected }: { testString: string; expected: string }) => {
+        const result = stripFirstLast(testString);
 
-        const result = stripQuotes(testString);
+        expect(result).toBe(expected);
+      }
+    );
+  });
 
-        expect(result).toBe("double quoted");
-      });
+  describe("stripQuotes", () => {
+    it("should strip surrounding single quotes if the string contains them", () => {
+      const testString = "'single quoted'";
 
-      it("should leave the string unchanged if it is not surrounded by quotes", () => {
-        const testString = "unquoted";
+      const result = stripQuotes(testString);
 
-        const result = stripQuotes(testString);
+      expect(result).toBe("single quoted");
+    });
 
-        expect(result).toBe(testString);
-      });
+    it("should strip surrounding double quotes if the string contains them", () => {
+      const testString = '"double quoted"';
+
+      const result = stripQuotes(testString);
+
+      expect(result).toBe("double quoted");
+    });
+
+    it("should leave the string unchanged if it is not surrounded by quotes", () => {
+      const testString = "unquoted";
+
+      const result = stripQuotes(testString);
+
+      expect(result).toBe(testString);
     });
   });
 

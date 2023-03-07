@@ -6,22 +6,22 @@ import {
   jsxElementEnterVisitor,
   jsxElementExitVisitor,
   jsxTextVisitor,
+  templateLiteralEnterVisitor,
+  templateLiteralExitVisitor,
 } from "./visitors";
 
-const initialTransformState: TransformState = {
+const createInitialState = () => ({
   key: "Existing text ",
   message: "Existing text ",
   elementNameOccurrences: {},
   translationHookProperties: [],
   elementNameStack: [],
-};
+});
 
 describe("JSXText visitor", () => {
   it("should append the text to both the key and the message", () => {
-    const jsxTextNode = t.jSXText("test");
-    const state = {
-      ...initialTransformState,
-    };
+    const jsxTextNode = t.jsxText("test");
+    const state = createInitialState();
 
     jsxTextVisitor({ node: jsxTextNode }, state);
 
@@ -35,27 +35,84 @@ describe("JSXText visitor", () => {
   });
 });
 
+describe("TemplateLiteral", () => {
+  describe("enter visitor", () => {
+    it("should append the text and any member expressions to both the key and the message", () => {
+      const templateLiteral = t.templateLiteral(
+        [
+          t.templateElement({ raw: "My name is " }),
+          t.templateElement({ raw: "!" }, true),
+        ],
+        [t.memberExpression(t.identifier("props"), t.identifier("name"))]
+      );
+      const state = createInitialState();
+
+      templateLiteralEnterVisitor({ node: templateLiteral }, state);
+
+      expect(state).toEqual({
+        key: "Existing text My name is propsName!",
+        message: "Existing text My name is {propsName}!",
+        elementNameOccurrences: {},
+        translationHookProperties: [
+          t.objectProperty(
+            t.identifier("propsName"),
+            t.memberExpression(t.identifier("props"), t.identifier("name"))
+          ),
+        ],
+        elementNameStack: [],
+      });
+    });
+  });
+
+  describe("exit visitor", () => {
+    // Hard to test this one as it needs a full node path
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip("should append the text and any member expressions to both the key and the message", () => {
+      const templateLiteral = t.templateLiteral(
+        [
+          t.templateElement({ raw: "My name is " }),
+          t.templateElement({ raw: "!" }, true),
+        ],
+        [t.memberExpression(t.identifier("props"), t.identifier("name"))]
+      );
+      const state = createInitialState();
+
+      // @ts-expect-error
+      templateLiteralExitVisitor({ node: templateLiteral }, state);
+
+      expect(state).toEqual({
+        key: "Existing text My name is propsName!",
+        message: "Existing text My name is {propsName}!",
+        elementNameOccurrences: {},
+        translationHookProperties: [
+          t.objectProperty(
+            t.identifier("propsName"),
+            t.memberExpression(t.identifier("props"), t.identifier("name"))
+          ),
+        ],
+        elementNameStack: [],
+      });
+    });
+  });
+});
+
 describe("JSXElement", () => {
   describe("enter visitor", () => {
     describe("when the element is the VocabTransform element", () => {
       it("should not alter state if we the element is the VocabTransform element", () => {
         const jsxElement = createJsxElement("VocabTransform");
-        const state = {
-          ...initialTransformState,
-        };
+        const state = createInitialState();
 
         jsxElementEnterVisitor({ node: jsxElement }, state);
 
-        expect(state).toEqual(initialTransformState);
+        expect(state).toEqual(createInitialState());
       });
     });
 
     describe("when the element is not the VocabTransform element", () => {
       it("push the element name onto the element name stack and append and an element tag to the message", () => {
         const jsxElement = createJsxElement("button");
-        const state = {
-          ...initialTransformState,
-        };
+        const state = createInitialState();
 
         jsxElementEnterVisitor({ node: jsxElement }, state);
 

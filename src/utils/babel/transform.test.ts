@@ -1,6 +1,7 @@
 import {
   transformHighlightContainingJsx,
   transformJsxToVocabHook,
+  transformTemplateLiteralToVocabHook,
 } from "./transform";
 import type { TransformResult } from "./types";
 
@@ -129,5 +130,20 @@ describe("transformHighlightContainingJsx", () => {
 
       expect(result).toEqual(expected);
     });
+  });
+});
+
+describe("transformTemplateLiteralToVocabHook", () => {
+  it("should transform a string literal into the hook call", () => {
+    const input = "`My name is ${props.name}!`";
+
+    const result = transformTemplateLiteralToVocabHook(input);
+    const expected = {
+      key: "My name is propsName!",
+      message: "My name is {propsName}!",
+      code: 't("My name is propsName!", { propsName: props.name })',
+    };
+
+    expect(result).toEqual(expected);
   });
 });

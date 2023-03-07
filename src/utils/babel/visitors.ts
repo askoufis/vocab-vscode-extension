@@ -4,7 +4,9 @@ import {
   createElementRendererObjectProperty,
   getJsxElementName,
   isJsxVocabTransformElement,
+  memberExpressionToObjectProperty,
 } from "./typeOperations";
+import type { NodePath } from "@babel/core";
 
 export const jsxTextVisitor = (
   { node: jsxText }: { node: t.JSXText },
@@ -13,6 +15,81 @@ export const jsxTextVisitor = (
   const text = jsxText.value;
   state.key = `${state.key}${text}`;
   state.message = `${state.message}${text}`;
+};
+
+const constructHookCallExpression = (state: TransformState) => {
+  const keyStringLiteral = t.stringLiteral(state.key);
+  const hookParameters = t.objectExpression(state.translationHookProperties);
+  const hookArguments = [keyStringLiteral, hookParameters];
+
+  return t.callExpression(translationHookIdentifier, hookArguments);
+};
+
+export const templateLiteralEnterVisitor = (
+  { node: templateLiteral }: { node: t.TemplateLiteral },
+  state: TransformState
+) => {
+  // Template literals alternate between quasis and expressions
+  let index = 0;
+  for (const quasi of templateLiteral.quasis) {
+    const text = quasi.value.raw;
+    state.key = `${state.key}${text}`;
+    state.message = `${state.message}${text}`;
+
+    if (quasi.tail) {
+      break;
+    }
+
+    const expression = templateLiteral.expressions[index];
+
+    if (t.isMemberExpression(expression)) {
+      const { keyString, objectProperty } =
+        memberExpressionToObjectProperty(expression);
+      state.key = `${state.key}${keyString}`;
+      state.message = `${state.message}{${keyString}}`;
+
+      state.translationHookProperties.push(objectProperty);
+    } else {
+      throw new Error(`Expected member expression, got ${expression?.type}`);
+    }
+
+    index += 1;
+  }
+};
+
+export const templateLiteralExitVisitor = (
+  path: NodePath<t.TemplateLiteral>,
+  state: TransformState
+) => {
+  const hookCallExpression = constructHookCallExpression(state);
+
+  path.replaceWith(hookCallExpression);
+  // // Template literals alternate between quasis and expressions
+  // let index = 0;
+  // for (const quasi of templateLiteral.quasis) {
+  //   const text = quasi.value.raw;
+  //   state.key = `${state.key}${text}`;
+  //   state.message = `${state.message}${text}`;
+  //
+  //   if (quasi.tail) {
+  //     break;
+  //   }
+  //
+  //   const expression = templateLiteral.expressions[index];
+  //
+  //   if (t.isMemberExpression(expression)) {
+  //     const { keyString, objectProperty } =
+  //       memberExpressionToObjectProperty(expression);
+  //     state.key = `${state.key}${keyString}`;
+  //     state.message = `${state.message}{${keyString}}`;
+  //
+  //     state.translationHookProperties.push(objectProperty);
+  //   } else {
+  //     throw new Error(`Expected member expression, got ${expression?.type}`);
+  //   }
+  //
+  //   index += 1;
+  // }
 };
 
 export const jsxElementEnterVisitor = (
@@ -41,15 +118,9 @@ export const jsxElementExitVisitor = (
   state: TransformState
 ) => {
   if (isJsxVocabTransformElement(jsxElement)) {
-    const keyStringLiteral = t.stringLiteral(state.key);
-    const hookParameters = t.objectExpression(state.translationHookProperties);
-    const hookArguments = [keyStringLiteral, hookParameters];
-    const hookCallExpression = t.callExpression(
-      translationHookIdentifier,
-      hookArguments
-    );
+    const hookCallExpression = constructHookCallExpression(state);
 
-    jsxElement.children = [t.jSXExpressionContainer(hookCallExpression)];
+    jsxElement.children = [t.jsxExpressionContainer(hookCallExpression)];
   } else {
     // Update message
     // Since we're exiting the node the element name is on the top of the stack

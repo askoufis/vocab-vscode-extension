@@ -5,13 +5,18 @@ import type {
   HighlightStringWithTransform,
   HighlightType,
 } from "../types/translation";
+import { isHighlightStringWithTransform } from "../types/translation";
 import * as codeStrings from "../commands/extractTranslationString/codeStrings";
-import { transformHighlightContainingJsx } from "./babel/transform";
+import {
+  transformHighlightContainingJsx,
+  transformTemplateLiteralToVocabHook as transformTemplateLiteralHighlight,
+} from "./babel/transform";
 import {
   consolidateMultiLineString,
   containsJavascriptExpression,
   isDoubleQuoted,
   isSingleQuoted,
+  isTemplateLiteral,
   stripQuotes,
   truncateString,
   wrapWithCurlyBrackets,
@@ -79,7 +84,7 @@ const replaceAndInsertHook = async (
   });
 };
 
-const replaceComplexJsx = async (
+const replaceHighlightStringWithTransform = async (
   editor: vscode.TextEditor,
   highlightString: HighlightStringWithTransform
 ) => {
@@ -96,8 +101,8 @@ export const replaceHighlightWithTranslation = async (
   highlightString: HighlightString,
   maxTranslationKeyLength: MaxTranslationKeyLength
 ): Promise<void> => {
-  if (highlightString.type === "complexJsx") {
-    await replaceComplexJsx(editor, highlightString);
+  if (isHighlightStringWithTransform(highlightString)) {
+    await replaceHighlightStringWithTransform(editor, highlightString);
     return;
   }
 
@@ -139,12 +144,8 @@ const analyseSelection = (
 ): { selection: vscode.Selection; type: HighlightType } => {
   const originalSelectionText = getSelectionText(document, originalSelection);
 
-  if (
-    (originalSelectionText.includes("<") &&
-      originalSelectionText.includes(">")) ||
-    containsJavascriptExpression(originalSelectionText)
-  ) {
-    return { selection: originalSelection, type: "complexJsx" };
+  if (isTemplateLiteral(originalSelectionText)) {
+    return { selection: originalSelection, type: "propValueTemplateLiteral" };
   }
 
   const expandedSelection = expandSelectionByOneCharacter(
@@ -152,6 +153,18 @@ const analyseSelection = (
     originalSelection
   );
   const expandedSelectionText = getSelectionText(document, expandedSelection);
+
+  if (isTemplateLiteral(expandedSelectionText)) {
+    return { selection: expandedSelection, type: "propValueTemplateLiteral" };
+  }
+
+  if (
+    (originalSelectionText.includes("<") &&
+      originalSelectionText.includes(">")) ||
+    containsJavascriptExpression(originalSelectionText)
+  ) {
+    return { selection: originalSelection, type: "complexJsx" };
+  }
 
   if (expandedSelectionText.startsWith("=")) {
     return { selection: originalSelection, type: "propValueStringLiteral" };
@@ -198,6 +211,11 @@ const analyseSelection = (
   return { selection, type };
 };
 
+const typesToStripQuotesFrom: Array<HighlightType> = [
+  "stringLiteral",
+  "propValueStringLiteral",
+];
+
 export const getHighlightString = (
   editor: vscode.TextEditor
 ): HighlightString => {
@@ -209,16 +227,24 @@ export const getHighlightString = (
     selection
   );
 
-  let value = consolidateMultiLineString(getSelectionText(document, selection));
-
-  if (type !== "jsxStringLiteral") {
-    value = stripQuotes(value);
-  }
+  let value = consolidateMultiLineString(
+    getSelectionText(document, analysisSelection)
+  );
 
   if (type === "complexJsx") {
     const transformResult = transformHighlightContainingJsx(value);
 
     return { type, selection: analysisSelection, transformResult };
+  }
+
+  if (type === "propValueTemplateLiteral") {
+    const transformResult = transformTemplateLiteralHighlight(value);
+
+    return { type, selection: analysisSelection, transformResult };
+  }
+
+  if (typesToStripQuotesFrom.includes(type)) {
+    value = stripQuotes(value);
   }
 
   return {
