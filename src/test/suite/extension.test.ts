@@ -219,12 +219,13 @@ suite("Vocab Helper Extension Suite", () => {
     });
 
     suite("Component containing a prop with a template string value", () => {
-      const selection = fromHighlightPositions([7, 16], [7, 43]);
+      const selections = createUnquotedAndQuotedSelections(7, 17, 7, 42);
 
-      test("should extract the translation string from the template string value, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
-        const testFileName = "propTemplateString.tsx";
+      selections.map((selection) => {
+        test("should extract the translation string from the template string value, surround the hook call with curly brackets, extract the argument and add it to the translations file", async () => {
+          const testFileName = "propTemplateString.tsx";
 
-        const expectedFileContents = dedent`
+          const expectedFileContents = dedent`
             import { useTranslations } from "@vocab/react";
             import translations from "./.vocab";
             import React from "react";
@@ -236,18 +237,19 @@ suite("Vocab Helper Extension Suite", () => {
               );
             };`;
 
-        const expectedTranslationsFileContents = dedent`
+          const expectedTranslationsFileContents = dedent`
             {
               "My name is propsName!": {
                 "message": "My name is {propsName}!"
               }
             }`;
 
-        await runExtractionTest({
-          testFileName,
-          expectedFileContents,
-          expectedTranslationsFileContents,
-          selection,
+          await runExtractionTest({
+            testFileName,
+            expectedFileContents,
+            expectedTranslationsFileContents,
+            selection,
+          });
         });
       });
     });
