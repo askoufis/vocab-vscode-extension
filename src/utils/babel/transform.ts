@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Visitor } from "@babel/core";
-import { transformSync } from "@babel/core";
+import { type Visitor, transformSync } from "@babel/core";
 import * as t from "@babel/types";
 import { memberExpressionToObjectProperty } from "./typeOperations";
 import {
@@ -35,7 +34,7 @@ export const transformHighlightContainingJsx = (s: string): TransformResult => {
 };
 
 export const transformJsxToVocabHook = (
-  validJsxCode: string
+  validJsxCode: string,
 ): TransformResult => {
   let transformResult: TransformResult = { key: "", message: "", code: "" };
 
@@ -56,7 +55,7 @@ export const transformJsxToVocabHook = (
 };
 
 export const transformTemplateLiteralToVocabHook = (
-  validJsxCode: string
+  validJsxCode: string,
 ): TransformResult => {
   let transformResult: TransformResult = { key: "", message: "", code: "" };
 
@@ -82,7 +81,7 @@ const jsxExpressionContainerVisitor: Visitor<PluginState> = {
   MemberExpression: (path, state) => {
     if (t.isJSXExpressionContainer(path.parent)) {
       const { objectProperty, keyString } = memberExpressionToObjectProperty(
-        path.node
+        path.node,
       );
       state.key = `${state.key}${keyString}`;
       state.message = `${state.message}{${keyString}}`;
@@ -98,7 +97,7 @@ const jsxExpressionContainerVisitor: Visitor<PluginState> = {
         keyAndValue,
         keyAndValue,
         computed,
-        shorthand
+        shorthand,
       );
       state.translationHookProperties.push(objectProperty);
 

@@ -5,3 +5,4 @@ node_modules
 *.vsix
 *.vocab/
 yarn-error.log
+.eslintcache

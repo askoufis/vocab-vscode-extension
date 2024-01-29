@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
 import type { MaxTranslationKeyLength } from "../types/configuration";
-import type {
-  HighlightString,
-  HighlightStringWithTransform,
-  HighlightType,
-} from "../types/translation";
-import { isHighlightStringWithTransform } from "../types/translation";
+import {
+ isHighlightStringWithTransform ,type 
+  HighlightString,type 
+  HighlightStringWithTransform,type 
+  HighlightType } from "../types/translation";
 import * as codeStrings from "../commands/extractTranslationString/codeStrings";
 import {
   transformHighlightContainingJsx,
@@ -211,7 +210,7 @@ const analyseSelection = (
   return { selection, type };
 };
 
-const typesToStripQuotesFrom: Array<HighlightType> = [
+const typesToStripQuotesFrom: HighlightType[] = [
   "stringLiteral",
   "propValueStringLiteral",
 ];

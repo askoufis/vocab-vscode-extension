@@ -25,50 +25,50 @@ import type { TransformResult } from "../utils/babel/types";
  * Highlight:       _________________________________
  */
 
-export type StringLiteral = {
+export interface StringLiteral {
   /** What type of thing was the highlighted text */
   type: "stringLiteral";
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** The string literal value, excluding surrounding quotes if the selection contains quotes */
   value: string;
-};
+}
 
-export type JsxStringLiteral = {
+export interface JsxStringLiteral {
   /** What type of thing was the highlighted text */
   type: "jsxStringLiteral";
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** The string literal value, excluding surrounding quotes if the selection contains quotes */
   value: string;
-};
+}
 
-export type PropValueStringLiteral = {
+export interface PropValueStringLiteral {
   /** What type of thing was the highlighted text */
   type: "propValueStringLiteral";
   /** The selection containing the string literal and quotes if they exist (i.e. if it's not a JSX string literal) */
   selection: vscode.Selection;
   /** The string literal value, excluding surrounding quotes if the selection contains quotes */
   value: string;
-};
+}
 
-type ComplexJsx = {
+interface ComplexJsx {
   /** What type of thing was the highlighted text */
   type: "complexJsx";
   /** The selection containing the JSX */
   selection: vscode.Selection;
   /** The result of the babel transformation */
   transformResult: TransformResult;
-};
+}
 
-type PropValueTemplateLiteral = {
+interface PropValueTemplateLiteral {
   /** What type of thing was the highlighted text */
   type: "propValueTemplateLiteral";
   /** The selection containing the JSX */
   selection: vscode.Selection;
   /** The result of the babel transformation */
   transformResult: TransformResult;
-};
+}
 
 export type HighlightStringNoTransform =
   | StringLiteral

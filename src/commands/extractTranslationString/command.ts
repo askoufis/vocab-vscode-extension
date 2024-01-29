@@ -7,18 +7,18 @@ import {
   replaceHighlightWithTranslation,
 } from "../../utils/editor";
 import { TextDecoder } from "util";
-import type {
-  HighlightString,
-  TranslationsFile,
+import {
+  isHighlightStringWithTransform,
+  type HighlightString,
+  type TranslationsFile,
 } from "../../types/translation";
-import { isHighlightStringWithTransform } from "../../types/translation";
 import type { MaxTranslationKeyLength } from "../../types/configuration";
 import { getTranslationsFilePath } from "../../utils/file";
 import { getConfiguration } from "../configuration";
 import { showError } from "../../utils/error";
 
 const getTranslationStringKeyFromHighlightString = (
-  highlightString: HighlightString
+  highlightString: HighlightString,
 ): string => {
   if (isHighlightStringWithTransform(highlightString)) {
     return highlightString.transformResult.key;
@@ -28,7 +28,7 @@ const getTranslationStringKeyFromHighlightString = (
 };
 
 const getTranslationMessageFromHighlightString = (
-  highlightString: HighlightString
+  highlightString: HighlightString,
 ): string => {
   if (isHighlightStringWithTransform(highlightString)) {
     return highlightString.transformResult.message;
@@ -40,7 +40,7 @@ const getTranslationMessageFromHighlightString = (
 const addTranslationStringToTranslationsFile = async (
   editor: vscode.TextEditor,
   highlightString: HighlightString,
-  maxTranslationKeyLength: MaxTranslationKeyLength
+  maxTranslationKeyLength: MaxTranslationKeyLength,
 ): Promise<void> => {
   const translationsFilePath = getTranslationsFilePath(editor);
   const translationsFileUri = vscode.Uri.file(translationsFilePath);
@@ -51,7 +51,7 @@ const addTranslationStringToTranslationsFile = async (
   if (maxTranslationKeyLength) {
     translationStringKey = truncateString(
       translationStringKey,
-      maxTranslationKeyLength
+      maxTranslationKeyLength,
     );
   }
 
@@ -65,9 +65,8 @@ const addTranslationStringToTranslationsFile = async (
   try {
     // Check if the file exists
     await vscode.workspace.fs.stat(translationsFileUri);
-    const fileContentsBuffer = await vscode.workspace.fs.readFile(
-      translationsFileUri
-    );
+    const fileContentsBuffer =
+      await vscode.workspace.fs.readFile(translationsFileUri);
 
     // Default to an empty object if the file is empty
     const fileContents = new TextDecoder().decode(fileContentsBuffer) || "{}";
@@ -81,13 +80,13 @@ const addTranslationStringToTranslationsFile = async (
 
     await vscode.workspace.fs.writeFile(
       translationsFileUri,
-      Buffer.from(JSON.stringify(updatedTranslations, undefined, 2))
+      Buffer.from(JSON.stringify(updatedTranslations, undefined, 2)),
     );
   } catch {
     // Create a translations file if it doesn't exist, i.e. if fs.stat fails
     await vscode.workspace.fs.writeFile(
       translationsFileUri,
-      Buffer.from(JSON.stringify(translationStringObject, undefined, 2))
+      Buffer.from(JSON.stringify(translationStringObject, undefined, 2)),
     );
   }
 };
@@ -106,7 +105,7 @@ export const extractTranslationStringCommand = async () => {
     await replaceHighlightWithTranslation(
       editor,
       highlightString,
-      maxTranslationKeyLength
+      maxTranslationKeyLength,
     );
 
     if (formatAfterReplace) {
@@ -116,7 +115,7 @@ export const extractTranslationStringCommand = async () => {
     await addTranslationStringToTranslationsFile(
       editor,
       highlightString,
-      maxTranslationKeyLength
+      maxTranslationKeyLength,
     );
   } catch (error) {
     showError(error);
