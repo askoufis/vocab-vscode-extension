@@ -1,43 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`JSXElement exit visitor when the element is not the VocabTransform element should append its closing tag to the message and add its render function to the translation hook properties 1`] = `
-Object {
-  "elementNameOccurrences": Object {},
-  "elementNameStack": Array [],
+{
+  "elementNameOccurrences": {},
+  "elementNameStack": [],
   "key": "Existing text click me",
   "message": "Existing text <button>click me</button>",
-  "translationHookProperties": Array [
-    Object {
+  "translationHookProperties": [
+    {
       "computed": false,
       "decorators": null,
-      "key": Object {
+      "key": {
         "name": "button",
         "type": "Identifier",
       },
       "shorthand": false,
       "type": "ObjectProperty",
-      "value": Object {
+      "value": {
         "async": false,
-        "body": Object {
-          "children": Array [
-            Object {
-              "expression": Object {
+        "body": {
+          "children": [
+            {
+              "expression": {
                 "name": "children",
                 "type": "Identifier",
               },
               "type": "JSXExpressionContainer",
             },
           ],
-          "closingElement": Object {
-            "name": Object {
+          "closingElement": {
+            "name": {
               "name": "button",
               "type": "JSXIdentifier",
             },
             "type": "JSXClosingElement",
           },
-          "openingElement": Object {
-            "attributes": Array [],
-            "name": Object {
+          "openingElement": {
+            "attributes": [],
+            "name": {
               "name": "button",
               "type": "JSXIdentifier",
             },
@@ -48,8 +48,8 @@ Object {
           "type": "JSXElement",
         },
         "expression": null,
-        "params": Array [
-          Object {
+        "params": [
+          {
             "name": "children",
             "type": "Identifier",
           },
@@ -62,47 +62,47 @@ Object {
 `;
 
 exports[`JSXElement exit visitor when the element is the VocabTransform element should replace its children with the translation hook call 1`] = `
-Array [
-  Object {
-    "expression": Object {
-      "arguments": Array [
-        Object {
+[
+  {
+    "expression": {
+      "arguments": [
+        {
           "type": "StringLiteral",
           "value": "Click here",
         },
-        Object {
-          "properties": Array [
-            Object {
+        {
+          "properties": [
+            {
               "computed": false,
               "decorators": null,
-              "key": Object {
+              "key": {
                 "name": "button",
                 "type": "Identifier",
               },
               "shorthand": false,
               "type": "ObjectProperty",
-              "value": Object {
+              "value": {
                 "async": false,
-                "body": Object {
-                  "children": Array [
-                    Object {
-                      "expression": Object {
+                "body": {
+                  "children": [
+                    {
+                      "expression": {
                         "name": "children",
                         "type": "Identifier",
                       },
                       "type": "JSXExpressionContainer",
                     },
                   ],
-                  "closingElement": Object {
-                    "name": Object {
+                  "closingElement": {
+                    "name": {
                       "name": "button",
                       "type": "JSXIdentifier",
                     },
                     "type": "JSXClosingElement",
                   },
-                  "openingElement": Object {
-                    "attributes": Array [],
-                    "name": Object {
+                  "openingElement": {
+                    "attributes": [],
+                    "name": {
                       "name": "button",
                       "type": "JSXIdentifier",
                     },
@@ -113,8 +113,8 @@ Array [
                   "type": "JSXElement",
                 },
                 "expression": null,
-                "params": Array [
-                  Object {
+                "params": [
+                  {
                     "name": "children",
                     "type": "Identifier",
                   },
@@ -126,7 +126,7 @@ Array [
           "type": "ObjectExpression",
         },
       ],
-      "callee": Object {
+      "callee": {
         "name": "t",
         "type": "Identifier",
       },

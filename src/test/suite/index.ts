@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import * as path from "path";
-import * as Mocha from "mocha";
-import * as glob from "glob";
+import path from "path";
+import Mocha from "mocha";
+import { glob } from "fast-glob";
 
-export function run(): Promise<void> {
+export async function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     ui: "tdd",
@@ -11,29 +11,20 @@ export function run(): Promise<void> {
   });
 
   const testsRoot = path.resolve(__dirname, "..");
+  const testFiles = await glob("**/**.test.js", { cwd: testsRoot });
 
-  return new Promise((c, e) => {
-    glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
-      if (err) {
-        return e(err);
-      }
+  // Add files to the test suite
+  testFiles.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
-      // Add files to the test suite
-      files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
-
-      try {
-        // Run the mocha test
-        mocha.run((failures) => {
-          if (failures > 0) {
-            e(new Error(`${failures} tests failed.`));
-          } else {
-            c();
-          }
-        });
-      } catch (error) {
-        console.error(error);
-        e(error);
+  try {
+    // Run the mocha test
+    mocha.run((failures) => {
+      if (failures > 0) {
+        throw new Error(`${failures} tests failed.`);
       }
     });
-  });
+  } catch (error) {
+    console.error(error);
+    throw new Error(error as string);
+  }
 }

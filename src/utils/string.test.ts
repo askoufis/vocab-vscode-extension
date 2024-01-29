@@ -79,14 +79,11 @@ describe("stringUtils", () => {
       ${"ab"}      | ${""}      | ${"string length equal to 2"}
       ${"a"}       | ${"a"}     | ${"string length equal to 1"}
       ${""}        | ${""}      | ${"string length equal to 0"}
-    `(
-      "$scenario",
-      ({ testString, expected }: { testString: string; expected: string }) => {
-        const result = stripFirstLast(testString);
+    `("$scenario", ({ testString, expected }) => {
+      const result = stripFirstLast(testString);
 
-        expect(result).toBe(expected);
-      }
-    );
+      expect(result).toBe(expected);
+    });
   });
 
   describe("stripQuotes", () => {
