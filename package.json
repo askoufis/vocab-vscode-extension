@@ -83,6 +83,8 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@swc/core": "^1.6.1",
+    "@swc/jest": "^0.2.36",
     "@types/babel__core": "7.20.5",
     "@types/jest": "^29.5.11",
     "@types/mocha": "^10.0.6",
@@ -93,7 +95,6 @@
     "@vscode/test-electron": "^2.3.9",
     "@vscode/vsce": "^2.23.0",
     "esbuild": "^0.20.0",
-    "esbuild-jest": "^0.5.0",
     "eslint": "^8.56.0",
     "eslint-config-seek": "^12.1.1",
     "fast-glob": "^3.3.2",
