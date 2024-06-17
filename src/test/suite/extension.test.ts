@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import dedent from "ts-dedent";
+import dedent from "dedent";
 import {
   createUnquotedAndQuotedSelections,
   fromHighlightPositions,
@@ -40,7 +40,7 @@ suite("Vocab Helper Extension Suite", () => {
             selection,
           });
         });
-      }
+      },
     );
 
     suite("Component containing a JSX string literal on its own line", () => {
@@ -259,7 +259,7 @@ suite("Vocab Helper Extension Suite", () => {
             });
           });
         });
-      }
+      },
     );
 
     suite(
@@ -303,7 +303,7 @@ suite("Vocab Helper Extension Suite", () => {
             });
           });
         });
-      }
+      },
     );
 
     suite(
@@ -338,10 +338,10 @@ suite("Vocab Helper Extension Suite", () => {
               expectedTranslationsFileContents,
               selection,
             },
-            { maxTranslationKeyLength: 20 }
+            { maxTranslationKeyLength: 20 },
           );
         });
-      }
+      },
     );
 
     suite("Component containing complex JSX", () => {

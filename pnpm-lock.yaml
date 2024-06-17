@@ -60,6 +60,9 @@ importers:
       '@vscode/vsce':
         specifier: ^2.23.0
         version: 2.23.0
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
       esbuild:
         specifier: ^0.20.0
         version: 0.20.0
@@ -81,9 +84,6 @@ importers:
       mocha:
         specifier: ^10.2.0
         version: 10.2.0
-      ts-dedent:
-        specifier: ^2.2.0
-        version: 2.2.0
       typescript:
         specifier: ~5.3.3
         version: 5.3.3
@@ -1193,8 +1193,8 @@ packages:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
     engines: {node: '>=10'}
 
-  dedent@1.5.1:
-    resolution: {integrity: sha512-+LxW+KLWxu3HW3M2w2ympwtqPrqYRzU8fqi6Fhd18fBALe15blJPI/I4+UHveMVG6lJqB4JNd4UG0S5cnVHwIg==}
+  dedent@1.5.3:
+    resolution: {integrity: sha512-NHQtfOOW68WD8lgypbLA5oT+Bt0xXJhiYvoR6SmmNXZfpzOGXwdKWmcwG8N7PwVVWV3eF/68nmD9BaJSsTBhyQ==}
     peerDependencies:
       babel-plugin-macros: ^3.1.0
     peerDependenciesMeta:
@@ -2663,10 +2663,6 @@ packages:
     engines: {node: '>=16.13.0'}
     peerDependencies:
       typescript: '>=4.2.0'
-
-  ts-dedent@2.2.0:
-    resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
-    engines: {node: '>=6.10'}
 
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
@@ -4153,7 +4149,7 @@ snapshots:
       mimic-response: 3.1.0
     optional: true
 
-  dedent@1.5.1: {}
+  dedent@1.5.3: {}
 
   deep-extend@0.6.0:
     optional: true
@@ -5014,7 +5010,7 @@ snapshots:
       '@types/node': 18.19.10
       chalk: 4.1.2
       co: 4.6.0
-      dedent: 1.5.1
+      dedent: 1.5.3
       is-generator-fn: 2.1.0
       jest-each: 29.7.0
       jest-matcher-utils: 29.7.0
@@ -6025,8 +6021,6 @@ snapshots:
   ts-api-utils@1.0.3(typescript@5.3.3):
     dependencies:
       typescript: 5.3.3
-
-  ts-dedent@2.2.0: {}
 
   tsconfig-paths@3.15.0:
     dependencies:
