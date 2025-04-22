@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import path from "path";
 import Mocha from "mocha";
-import { glob } from "fast-glob";
+import { glob } from "node:fs/promises";
 
 export async function run(): Promise<void> {
   // Create the mocha test
@@ -11,10 +11,12 @@ export async function run(): Promise<void> {
   });
 
   const testsRoot = path.resolve(__dirname, "..");
-  const testFiles = await glob("**/**.test.js", { cwd: testsRoot });
+  const testFiles = glob("**/**.test.js", { cwd: testsRoot });
 
   // Add files to the test suite
-  testFiles.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
+  for await (const file of testFiles) {
+    mocha.addFile(path.resolve(testsRoot, file));
+  }
 
   try {
     // Run the mocha test
