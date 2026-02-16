@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`JSXElement exit visitor when the element is not the VocabTransform element should append its closing tag to the message and add its render function to the translation hook properties 1`] = `
 {

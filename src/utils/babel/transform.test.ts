@@ -125,7 +125,7 @@ describe("transformHighlightContainingJsx", () => {
       const expected = {
         key: "Bonjour de Vocab!!! Bonjour Bonjour!",
         message: "Bonjour de <a>Vocab</a>!!! <a1>Bonjour</a1> Bonjour!",
-        code: '{t("Bonjour de Vocab!!! Bonjour Bonjour!", { a: (children) => <a href={("/foo" as const)}>{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}',
+        code: '{t("Bonjour de Vocab!!! Bonjour Bonjour!", { a: (children) => <a href={"/foo" as const}>{children}</a>, a1: (children) => <a href="/bar">{children}</a> })}',
       };
 
       expect(result).toEqual(expected);
