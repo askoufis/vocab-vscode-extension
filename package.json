@@ -101,7 +101,7 @@
     "mocha": "^10.2.0",
     "typescript": "~5.9.3"
   },
-  "packageManager": "pnpm@10.25.0",
+  "packageManager": "pnpm@11.5.0",
   "__metadata": {
     "id": "539a1d6c-4c4f-49da-9f80-ff488e481c1d",
     "publisherDisplayName": "Adam Skoufis",

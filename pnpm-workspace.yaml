@@ -1,3 +1,9 @@
+allowBuilds:
+  '@swc/core': true
+  '@vscode/vsce-sign': true
+  esbuild: true
+  keytar: true
+  unrs-resolver: false
 onlyBuiltDependencies:
   - esbuild
   - unrs-resolver
