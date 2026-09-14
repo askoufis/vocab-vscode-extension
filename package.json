@@ -93,7 +93,7 @@
     "@vscode/test-electron": "^2.3.9",
     "@vscode/vsce": "^2.23.0",
     "dedent": "^1.5.3",
-    "esbuild": "^0.27.3",
+    "esbuild": "^0.28.2",
     "eslint": "^9.25.1",
     "eslint-config-seek": "^15.0.6",
     "jest": "^30.2.0",
