@@ -1,12 +1,9 @@
 allowBuilds:
+  '@parcel/watcher': true
   "@swc/core": true
   "@vscode/vsce-sign": true
   esbuild: true
   keytar: true
   unrs-resolver: false
-onlyBuiltDependencies:
-  - esbuild
-  - unrs-resolver
-
 minimumReleaseAge: 4320 # 3 days
 
